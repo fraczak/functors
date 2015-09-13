@@ -1,0 +1,21 @@
+{
+  "name": "functors",
+  "version": "0.0.1",
+  "description": "Set of async function transformers",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "coffee -c .",
+    "test": "coffee test.coffee"
+  },
+  "repository": {
+    "type": "git"
+  },
+  "author": "Wojciech Fraczak",
+  "license": "GPL",
+  "devDependencies": {
+    "async": "^1.4.2"
+  },
+  "dependencies": {
+    "lodash": "^3.10.1"
+  }
+}
