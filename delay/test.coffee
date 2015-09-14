@@ -8,5 +8,3 @@ for i in [1..10]
     do (i = i) ->
         delay((x) -> x) i, (err, data) ->
             console.log " .... #{i}"
-        
-

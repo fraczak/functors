@@ -40,15 +40,16 @@ class LazyValue
                     cb new Error("No field '#{field}' in: #{obj}")
 
 LazyValue.doc = """
-# `value = new LazyValue( fetch_fn )` creates a read only value initialized by an async
-# `fetch_fn`. The value is read by `value.get( cb )`.  E.g.:
-#    > var val = new LazyValue( function( cb ){ fs.readFile('/etc/passwd', cb); });
-#    > val.get( function( err, data ){ console.log(data.toString() ) });
+# `value = new LazyValue( fetch_fn )` creates a read only value initialized
+# by an async `fetch_fn`. The value is read by `value.get( cb )`.  E.g.:
+#
+#   > var val = new LazyValue(function(cb){fs.readFile('/etc/passwd', cb);});
+#   > val.get( function( err, data ){ console.log(data.toString() ) });
 #
 # There is also a helper method `select`:
-# `select(obj, path, cb)` a field `obj.path` in object `obj` which may contain
+# `select(obj, path, cb)` a field `obj.path` in `obj` which may contain
 # `LazyValue`s.
 # The callback `cb(err,val)` is called once value `val` of `obj.path`
-# is retrived.
+# is retrived or error occurs.
 """
 module.exports = LazyValue

@@ -40,7 +40,7 @@ async.series [
 
         trans_obj = (obj) ->
             ld.assign {}, obj, rec: new LazyValue (cb) ->
-                fs.readFile obj.rec, (err, val) ->
+                fs.readFile "./#{obj.rec}", (err, val) ->
                     cb null, trans_obj JSON.parse val
         lazy_obj = trans_obj require "./select.json"
 

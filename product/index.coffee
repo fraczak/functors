@@ -1,7 +1,7 @@
 product = (funcs...) ->
     if funcs.length is 0
         return (cb) ->
-            cb null, [] 
+            cb null, []
     (args..., cb) ->
         if args.length isnt funcs.length
             args = [args..., cb]

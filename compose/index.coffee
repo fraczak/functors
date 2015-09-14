@@ -11,10 +11,9 @@ compose = (funcs...) ->
             if 'function' isnt typeof cb
                 args = [args..., cb]
                 cb = ->
-            fn.apply null, [args..., (err, data...) ->
+            fn args..., (err, data...) ->
                 return cb(err, data...) if err
                 compose(funcs...) data..., cb
-            ]
 compose.doc = """
 # `compose(asyncFn1, asyncFn2, ...)` composes the asynchronous functions
 # `asyncFn1`, `asyncFn2`, ...

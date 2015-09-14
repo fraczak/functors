@@ -1,4 +1,4 @@
 {
     "f": "field f1 of select.json",
-    "rec": "./LazyValue/select2.json"
+    "rec": "select2.json"
 }

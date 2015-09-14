@@ -1,10 +1,11 @@
 product = require "./"
 delay   = require "../delay"
 
+console.log " TESTING: product ..."
+
 fn = delay((x) -> x+x)
 
 fn2 = product fn, fn
-
 
 x = 2
 y = 3
