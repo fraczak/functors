@@ -1,12 +1,11 @@
-async = require "async"
+{product} = require "../"
 fs = require 'fs'
 ld = require 'lodash'
 
 LazyValue = require "./"
 
-async.series [
-
-    (cb) ->
+product([
+    (_a,cb) ->
         output = [" - - - - - -"]
         output.push "TESTING `LazyValue`"
         asyncVals = [
@@ -34,7 +33,7 @@ async.series [
                 else
                     cb new Error " * LazyValue() test failed!!!"
 
-    (cb) ->
+    (_a,cb) ->
         output = [" - - - - - -"]
         output.push "TESTING `select`"
 
@@ -50,11 +49,10 @@ async.series [
             lazy_obj.rec.select ['rec','rec', 'g'], (err,val) ->
                 output.push val
                 cb null, output.join('\n')
-    ],
-    ( err, results) ->
+    ]) [1,1], ( err, results) ->
         for log in results
             console.log log
         if err
-            console.error err 
+            console.error err
         else
             console.log "\n   Done: all tests passed."

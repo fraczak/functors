@@ -1,11 +1,9 @@
 product = (funcs...) ->
+    funcs = [].concat funcs...
     if funcs.length is 0
         return (cb) ->
             cb null, []
-    (args..., cb) ->
-        if args.length isnt funcs.length
-            args = [args..., cb]
-            cb = ->
+    (args, cb = ->) ->
         if args.length isnt funcs.length
             throw new Error("Number of actual parameters doesn't match!!!")
         counter = funcs.length
@@ -22,8 +20,9 @@ product = (funcs...) ->
                         cb errors, result
 product.doc = """
 # `product(asyncFn1, asyncFn2, ..., asyncFnk)` generates a new async function
-# which takes k arguments, runs the async functions with them, and then calls
-# a cb with the array of results
+# which takes an array of k elements and a callback `cb` as arguments, runs
+# the async functions with the elements of the array. Finnaly, it calls `cb`
+# with the array of results
 """
 
 module.exports = product

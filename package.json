@@ -1,21 +1,21 @@
 {
   "name": "functors",
-  "version": "0.0.1",
-  "description": "Set of async function transformers",
+  "version": "1.0.0",
+  "description": "A collection of 'async' function generators and/or transformers",
   "main": "index.js",
   "scripts": {
     "prepublish": "coffee -c .",
     "test": "coffee test.coffee"
   },
   "repository": {
-    "type": "git"
+      "type": "git",
+      "url": "https://github.com/fraczak/functors.git"
   },
   "author": "Wojciech Fraczak",
   "license": "GPL",
+  "dependencies": {},
   "devDependencies": {
-    "async": "^1.4.2"
-  },
-  "dependencies": {
+    "coffee-script": "^1.10.0",
     "lodash": "^3.10.1"
   }
 }

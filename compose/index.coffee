@@ -1,4 +1,5 @@
 compose = (funcs...) ->
+    funcs = [].concat funcs...
     if funcs.length is 0
         (args..., cb) ->
             if 'function' isnt typeof cb
