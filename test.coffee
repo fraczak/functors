@@ -4,5 +4,6 @@ for part in [
     "throttle"
     "delay"
     "compose"
-    "product" ]
+    "product"
+    "map" ]
     require "./#{part}/test.coffee"
