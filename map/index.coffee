@@ -1,5 +1,5 @@
 product = require "../product"
-compose = require "../compose/index.coffee"
+compose = require "../compose"
 delay = require "../delay"
 
 map = (afn) ->
