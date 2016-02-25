@@ -3,6 +3,9 @@ map = require "./index.coffee"
 compose = require "../compose/index.coffee"
 delay = require "../delay/index.coffee"
 
+console.log [" - - - - - -"]
+console.log "TESTING `map`"
+
 files = (x,cb) ->
     fs.readdir "./map/a/"+x, cb
 

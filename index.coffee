@@ -4,6 +4,7 @@ throttle  = require "./throttle"
 delay     = require "./delay"
 compose   = require "./compose"
 product   = require "./product"
+map       = require "./map"
 
 module.exports = {
     LazyValue
@@ -12,4 +13,5 @@ module.exports = {
     delay
     compose
     product
+    map
 }

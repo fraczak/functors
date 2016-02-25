@@ -65,3 +65,10 @@ By running `coffee doc.coffee` we get the doc:
     # which takes an array of k elements and a callback `cb` as arguments, runs
     # the async functions with the elements of the array. Finnaly, it calls `cb`
     # with the array of results
+
+    map:
+    -----------
+    # `map(asyncFn)` generates a new async function which takes an array of
+    # k elements and a callback `cb` as arguments, runs the async function
+    # with every element of the array. Finnaly, it calls `cb`
+    # with the array of results
