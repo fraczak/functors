@@ -1,6 +1,7 @@
 for part in [
     "LazyValue"
     "retry"
+    "resource"
     "throttle"
     "delay"
     "compose"
