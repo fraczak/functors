@@ -1,6 +1,6 @@
 LazyValue = require "./LazyValue"
 retry     = require "./retry"
-resource  = require "./resource"
+semaphore = require "./semaphore"
 throttle  = require "./throttle"
 delay     = require "./delay"
 compose   = require "./compose"
@@ -10,7 +10,7 @@ map       = require "./map"
 module.exports = {
     LazyValue
     retry
-    resource
+    semaphore
     throttle
     delay
     compose

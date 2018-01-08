@@ -41,6 +41,14 @@ By running `coffee doc.coffee` we get the doc:
     #   `retry(asyncFun,times=2,interval=500)`
     # and it returns an async function.
 
+    semaphore:
+    -----------
+    #  `semaphore(maxRunning = 10)` constructs a constrained execution context and
+    #  returns a function `function(fn, that = null)` that constructs a function
+    #  which behaves as it's argument `fn`, unless there are already `maxRunning`
+    #  functions running in this resource's context. In such a case, the
+    #  execution is delayed.
+
     throttle:
     -----------
     #  `throttle(fn, waitTime = 2000)` constructs a function, which behaves
@@ -72,3 +80,5 @@ By running `coffee doc.coffee` we get the doc:
     # k elements and a callback `cb` as arguments, runs the async function
     # with every element of the array. Finnaly, it calls `cb`
     # with the array of results
+
+
