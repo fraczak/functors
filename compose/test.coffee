@@ -1,4 +1,4 @@
-compose = require "./"
+compose = require "./index.coffee"
 delay   = require "../delay"
 
 fn = delay((x) -> x+x)
@@ -28,3 +28,9 @@ compose([fn3, fn3]) x, (err, data) ->
         console.error "FAILED: we should get #{expected}!!!"
     else
         console.log "SUCCESS!!! (#{data})"
+
+inc = delay (x) ->
+  x + 1
+
+compose( (inc for x in [1..1001]) ) 0, (err, data) ->
+  console.log "Result = #{data}" 
