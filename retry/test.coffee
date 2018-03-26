@@ -4,7 +4,8 @@ ld = require 'lodash'
 
 retry = require "./"
 
-product([
+test = (cb) ->
+  product([
     (_,cb) ->
         output = [" - - - - - -"]
         output.push "TESTING `retry`"
@@ -17,7 +18,7 @@ product([
         funs = for file in ['/etc/passwd', '/etc/passwd_2', './kuku']
             do (file = file) ->
                 (myOutput,cbk) ->
-                    retry(fun.bind(this,file), 5, 2000) myOutput, (err, data) ->
+                    retry(fun.bind(this,file), 5, 1000) myOutput, (err, data) ->
                         str = if err then " failed reading #{file}" else " finished successfully reading #{file} "
                         console.log str
                         myOutput.push str
@@ -26,9 +27,13 @@ product([
                 cb err, output.concat(results).join('\n')
 
     ]) [1], ( err, results) ->
-        for log in results
-            console.log log
-        if err
-            console.error err
-        else
-            console.log "\n   Done: all tests passed."
+      for log in results or []
+        console.log log
+      return cb err if err
+      console.log "Success!"
+      cb null, true
+
+
+test console.log.bind console
+
+module.exports = test

@@ -4,7 +4,7 @@ ld = require 'lodash'
 
 LazyValue = require "./"
 
-product([
+test = product [
     (_a,cb) ->
         output = [" - - - - - -"]
         output.push "TESTING `LazyValue`"
@@ -49,10 +49,16 @@ product([
             lazy_obj.rec.select ['rec','rec', 'g'], (err,val) ->
                 output.push val
                 cb null, output.join('\n')
-    ]) [1,1], ( err, results) ->
-        for log in results
-            console.log log
-        if err
-            console.error err
-        else
-            console.log "\n   Done: all tests passed."
+    ]
+
+test [1,1], ( err, results) ->
+  for log in results
+    console.log log
+  if err
+    console.error err
+  else
+    console.log "\n   Done: all tests passed."
+
+module.exports = (cb) ->
+  test [1,1], (err) ->
+    cb err, not err

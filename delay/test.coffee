@@ -1,10 +1,20 @@
 delay = require "./"
+map   = require "../map"
 
-alog = delay console.log, 1000
+alog = delay console.log.bind(console)
 
-for i in [1..10]
-    console.log " calling #{i}"
-    alog "  running #{i}"
-    do (i = i) ->
-        delay((x) -> x) i, (err, data) ->
-            console.log " .... #{i}"
+t = (i, cb) ->
+  console.log " calling #{i}"
+  d = 1100 - 100 * i
+  alog " .. running #{i} with delay #{d}..."
+  delay(((x) -> x), d) i, (err, data) ->
+    console.log " ....  #{data} done"
+    cb err, data
+
+test = map(t)
+
+test [1..10], alog
+
+module.exports = (cb) ->
+  test [1..10], (err) ->
+    cb err, not err

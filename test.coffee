@@ -1,4 +1,7 @@
-for part in [
+assert = require "assert"
+map = require "./map"
+
+modules = [
     "LazyValue"
     "retry"
     "semaphore"
@@ -6,5 +9,17 @@ for part in [
     "delay"
     "compose"
     "product"
-    "map" ]
-    require "./#{part}/test.coffee"
+    "concurrent"
+    "merge"
+    "map"
+    "helpers" ]
+
+tests = for part in modules
+  [part, require "./#{part}/test.coffee"]
+
+
+map( ([part,testFn], cb) ->
+  testFn (err, result) ->
+    assert result
+    cb err, [part,result] ) tests, (err, data) ->
+      console.log "\n---\nTests have run: \n", data

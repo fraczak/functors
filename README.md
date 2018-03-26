@@ -19,6 +19,10 @@ In `coffee-script`:
 
 By running `coffee doc.coffee` we get the doc:
 
+> functors@1.3.0 doc /home/wojtek/gits/functors
+> coffee doc.coffee
+
+
     LazyValue:
     -----------
     # `value = new LazyValue( fetch_fn )` creates a read only value initialized
@@ -74,6 +78,20 @@ By running `coffee doc.coffee` we get the doc:
     # the async functions with the elements of the array. Finnaly, it calls `cb`
     # with the array of results
 
+    merge:
+    -----------
+    # `merge(aFun1, aFun2, ...)` transforms `aFun1, ...` into another async function
+    # which takes two arguments, `[args], cb`, and will try executing `aFun1(args[0])`
+    # and if error it will try aFun2(args[1]), and so on...
+
+    concurrent:
+    -----------
+    # `concurrent(aFn1, aFn2, ..., aFnk)` generates a new async function
+    # which takes an array of k elements and a callback `cb` as arguments, runs
+    # the afunctions cuncurrently with the elements of the array, respectively.
+    # The first function which succeeds, (err = null), calls `cb`
+    # with its results.
+
     map:
     -----------
     # `map(asyncFn)` generates a new async function which takes an array of
@@ -81,4 +99,12 @@ By running `coffee doc.coffee` we get the doc:
     # with every element of the array. Finnaly, it calls `cb`
     # with the array of results
 
+    helpers:
+    -----------
+    # Helper (synchronous) functions:
+    #  flatten: e.g., [[1,2],3,4] -> [1,2,3,4] 
+    #  isArray: e.g., [1,2,3] -> true
+    #  isString: e.g., 123 -> false
+    #  isFunction: ...
+    #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
 

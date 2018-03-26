@@ -1,5 +1,8 @@
 fs = require "fs"
+assert = require "assert"
+
 map = require "./index.coffee"
+product = require "../product/index.coffee"
 compose = require "../compose/index.coffee"
 delay = require "../delay/index.coffee"
 
@@ -12,8 +15,17 @@ files = (x,cb) ->
 h = compose files, map files
 h2 = compose files, map.obj files
 
-for f in [h,h2]
-    f "", (err, data) ->
-        console.log "err:#{JSON.stringify err}"
-        console.log "data:#{JSON.stringify data}"
 
+test = (cb) ->
+  product(h, h2) ["",""], (err,data) ->
+    return cb err if err
+    assert.deepEqual data, [
+      [["a","b"],["c","d"]],
+      {x:["a","b"],y:["c","d"]}
+    ]
+    console.log "Success!"
+    cb null, true
+
+test console.log.bind console
+
+module.exports = test

@@ -1,36 +1,31 @@
+assert = require "assert"
+
 compose = require "./index.coffee"
 delay   = require "../delay"
+product = require "../product"
 
-fn = delay((x) -> x+x)
+double = delay (x) -> x + x
+eightTimes = compose double, double, double
+sixtyFourTimes = compose([eightTimes,eightTimes])
 
-fn3 = compose fn, fn, fn
+inc = delay (x) -> x + 1
+inc1000 = compose( (inc for x in [1..1001]) )
 
-console.log " TESTING: compose ..."
+test = (cb) ->
 
-x = 2
-fn3 x, (err, data) ->
-    expected = x * 2 * 2 * 2
-    if err or expected isnt data
-        console.error "FAILED: we should get #{expected}!!!"
-    else
-        console.log "SUCCESS!!! (#{data})"
+  console.log " TESTING: compose ..."
 
-compose(fn3, fn3) x, (err, data) ->
-    expected = x * 2 * 2 * 2 * 2 * 2 * 2
-    if err or expected isnt data
-        console.error "FAILED: we should get #{expected}!!!"
-    else
-        console.log "SUCCESS!!! (#{data})"
+  x = 2
+  product(double, eightTimes, sixtyFourTimes, inc1000) [1, 1, 1, 1], (err, [r1,r2,r3,r4]) ->
+    return cb err if err
+    assert r1, 2
+    assert r2, 4
+    assert r3, 16
+    assert r4, 1001
+    console.log "Success!"
+    cb null, true
 
-compose([fn3, fn3]) x, (err, data) ->
-    expected = x * 2 * 2 * 2 * 2 * 2 * 2
-    if err or expected isnt data
-        console.error "FAILED: we should get #{expected}!!!"
-    else
-        console.log "SUCCESS!!! (#{data})"
+test (err, data) ->
+  console.log "Done:", err, data
 
-inc = delay (x) ->
-  x + 1
-
-compose( (inc for x in [1..1001]) ) 0, (err, data) ->
-  console.log "Result = #{data}" 
+module.exports = test
