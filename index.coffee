@@ -6,6 +6,7 @@ delay     = require "./delay"
 compose   = require "./compose"
 product   = require "./product"
 map       = require "./map"
+helpers   = require "./helpers"
 
 module.exports = {
     LazyValue
@@ -16,4 +17,5 @@ module.exports = {
     compose
     product
     map
+    helpers
 }

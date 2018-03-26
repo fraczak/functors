@@ -1,24 +1,23 @@
+assert = require "assert"
+
 product = require "./"
 delay   = require "../delay"
 
 console.log " TESTING: product ..."
 
-fn = delay((x) -> x+x)
+double = delay((x) -> x+x)
 
-fn2 = product fn, fn
+double2 = product double, double
 
-x = 2
-y = 3
-fn2 [x, y], (err, data) ->
-    expected = [x+x,y+y]
-    if err or expected[0] isnt data[0] or expected[1] isnt data[1]
-        console.error "FAILED: we should get #{expected}!!!"
-    else
-        console.log "SUCCESS!!! (#{data})"
+test = (cb) ->
+  product(double, double2) [1,[2,3]], (err, [r1, [r2, r3]]) ->
+    return cb err if err
+    assert r1, 2
+    assert r2, 4
+    assert r3, 6
+    console.log "Success!"
+    cb null, true
 
-product(fn2, fn2) [[x,x], [y,y]], (err, data) ->
-    expected = [[x+x,x+x],[y+y,y+y]]
-    if err or expected[0][1] isnt data[0][1] or expected[1][0] isnt data[1][0]
-        console.error "FAILED: we should get #{expected}!!!"
-    else
-        console.log "SUCCESS!!! (#{data})"
+test console.log.bind console
+
+module.exports = test

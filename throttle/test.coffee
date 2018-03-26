@@ -1,16 +1,24 @@
 throttle = require "./"
+map      = require "../map"
+delay    = require "../delay"
 
 console.log [" - - - - - -"]
 console.log "TESTING `throttle`"
-myFun = throttle console.log.bind(null), 500
+myFun = throttle console.log.bind(console), 500
 
-for i in [1..10]
-    delay = i * 300
-    ( (i,delay) ->
-        setTimeout ->
-            console.log " > calling myFun, i:#{i}, delay:#{delay}"
-            myFun "   ... running myFun, i:#{i}, delay:#{delay}"
-            if i is 10
-                console.log " * `throttle` probably OK, to make sure analize the output!"
-        , delay) i, delay
+myTest = map (i, cont) ->
+  d = i * 100
+  console.log " > calling myFun, i:#{i}, delay:#{d}"
+  delay(myFun,d) "   ... running myFun, i:#{i}, delay:#{d}", (err) ->
+    cont err, i
 
+test = (cb) ->
+  myTest [1..10], (err, data) ->
+    return cb err if err
+    console.log data
+    console.log "Success!"
+    cb null, true
+
+test console.log.bind console
+
+module.exports = test
