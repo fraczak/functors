@@ -26,6 +26,7 @@ An example:
     });
     // product yields 2,4,9
 
+
 The same in `coffee-script`:
 
     {delay, product, compose} = require "functors"
