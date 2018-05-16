@@ -1,5 +1,32 @@
 `functors` is a collection of "_async_" function generators and/or transformers.
-In `coffee-script`:
+
+To install:
+
+    npm i functors
+
+An example:
+
+    var delay   = require("functors/delay"),
+        product = require("functors/product"),
+        compose = require("functors/compose");
+
+    var fns = [
+      function(x){ return x + 1; },
+      function(x){ return x + x; },
+      function(x){ return x * x; }
+    ].map(function(f){ return delay(f); });
+
+    compose(fns)(1, function(err, data) {
+      console.log("compose yields " + data);
+    });
+    // compose yields 16
+
+    product(fns)([1,2,3], function(err, data) {
+      console.log("product yields " + data);
+    });
+    // product yields 2,4,9
+
+The same in `coffee-script`:
 
     {delay, product, compose} = require "functors"
 
@@ -17,11 +44,10 @@ In `coffee-script`:
         console.log "product yields #{data}"
     # product yields 2,4,9
 
-By running `coffee doc.coffee` we get the doc:
+By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
-> functors@1.3.0 doc /home/wojtek/gits/functors
-> coffee doc.coffee
-
+    > functors@1.3.0 doc /home/wojtek/gits/functors
+    > coffee doc.coffee
 
     LazyValue:
     -----------
