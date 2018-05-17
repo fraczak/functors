@@ -1,4 +1,5 @@
-`functors` is a collection of "_async_" function generators and/or transformers.
+`functors` is a collection of "_async_" function generators and/or
+transformers.
 
 To install:
 

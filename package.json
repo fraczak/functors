@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "coffee -c index.coffee */index.coffee",
+    "build" : "coffee -c index.coffee */index.coffee",
     "test": "coffee test.coffee",
     "doc": "coffee doc.coffee"
   },

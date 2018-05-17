@@ -29,8 +29,9 @@ concurrent = (funcs...) ->
   _concurrent flatten funcs
 concurrent.doc = '''
 # `concurrent(aFn1, aFn2, ..., aFnk)` generates a new async function
-# which takes an array of k elements and a callback `cb` as arguments, runs
-# the afunctions cuncurrently with the elements of the array, respectively.
+# which takes an array of k elements and a callback `cb` as arguments,
+# runs the functions cuncurrently with the elements of the array,
+# respectively.
 # The first function which succeeds, (err = null), calls `cb`
 # with its results.
 '''

@@ -22,4 +22,4 @@ map( ([part,testFn], cb) ->
   testFn (err, result) ->
     assert result
     cb err, [part,result] ) tests, (err, data) ->
-      console.log "\n---\nTests have run: \n", data
+      console.log "\n---\nTested: \n", data

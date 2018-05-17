@@ -1,24 +1,25 @@
-{flatten} = require "../helpers"
+{flatten, isArray} = require "../helpers"
 
 _product = (funcs) ->
-    if funcs.length is 0
-        return (cb) ->
-            cb null, []
-    (args, cb = ->) ->
-        if args.length isnt funcs.length
-            throw new Error("Number of actual parameters doesn't match!!!")
-        counter = funcs.length
-        result  = []
-        errors  = []
-        for i in [0..counter-1]
-            do (i = i) ->
-                funcs[i] args[i], (err, data) ->
-                    counter--
-                    errors[i] = err if err?
-                    result[i] = data
-                    if counter is 0
-                        errors = null if errors.length is 0
-                        cb errors, result
+  if funcs.length is 0
+    return (cb) ->
+      cb null, []
+  (args, cb = ->) ->
+    args = (args for i in [1..funcs.length]) unless isArray args
+    if args.length isnt funcs.length
+      throw new Error("Number of actual parameters doesn't match!!!")
+    counter = funcs.length
+    result  = []
+    errors  = []
+    for i in [0..counter-1]
+      do (i = i) ->
+        funcs[i] args[i], (err, data) ->
+          counter--
+          errors[i] = err if err?
+          result[i] = data
+          if counter is 0
+            errors = null if errors.length is 0
+            cb errors, result
 
 product = (funcs...) ->
   _product flatten funcs
