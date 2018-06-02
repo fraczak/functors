@@ -1,9 +1,11 @@
-{flatten, isArray} = require "../helpers"
+{flatten, isArray, isEmpty} = require "../helpers"
 
 _product = (funcs) ->
-  if funcs.length is 0
-    return (cb) ->
-      cb null, []
+  if isEmpty funcs
+    return (args, cb) ->
+      return cb null, [] if isEmpty args
+      throw new Error("Number of actual parameters doesn't match!!!")
+
   (args, cb = ->) ->
     args = (args for i in [1..funcs.length]) unless isArray args
     if args.length isnt funcs.length
