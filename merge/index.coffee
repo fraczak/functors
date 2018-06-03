@@ -9,17 +9,17 @@ _merge = (funcs) ->
     if args.length isnt funcs.length
       throw new Error("Number of actual parameters doesn't match!!!")
     errors  = []
-    iterFn = ->
+    iterFn = (funcs) ->
       [fn, funcs...] = funcs
       [a, args...] = args
       return cb errors unless isFunction fn
       fn a, (err, res) ->
         if err
           errors.push err
-          do iterFn
+          iterFn funcs
         else
           cb null, res
-    do iterFn
+    iterFn funcs
 
 merge = (funcs...) ->
   _merge flatten funcs
