@@ -1,6 +1,6 @@
 {
   "name": "functors",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A collection of 'async' function generators and/or transformers",
   "main": "index.js",
   "scripts": {

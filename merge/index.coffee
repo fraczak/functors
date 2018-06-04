@@ -1,5 +1,16 @@
 {isArray, isFunction, flatten} = require "../helpers"
 
+iterFn = (funcs, args, errors, cb) ->
+  [fn, funcs...] = funcs
+  [a, args...] = args
+  return cb errors unless isFunction fn
+  fn a, (err, res) ->
+    if err
+      errors.push err
+      setImmediate iterFn, funcs, args, errors, cb
+    else
+      cb null, res
+
 _merge = (funcs) ->
   if funcs.length is 0
     return (..., cb) ->
@@ -8,18 +19,7 @@ _merge = (funcs) ->
     args = (args for i in [1..funcs.length]) unless isArray args
     if args.length isnt funcs.length
       throw new Error("Number of actual parameters doesn't match!!!")
-    errors  = []
-    iterFn = (funcs) ->
-      [fn, funcs...] = funcs
-      [a, args...] = args
-      return cb errors unless isFunction fn
-      fn a, (err, res) ->
-        if err
-          errors.push err
-          iterFn funcs
-        else
-          cb null, res
-    iterFn funcs
+    iterFn funcs, args, [], cb
 
 merge = (funcs...) ->
   _merge flatten funcs

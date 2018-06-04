@@ -1,6 +1,8 @@
-delay = (syncFun, timeout = 0, context = this) ->
+{isFunction} = require "../helpers"
+
+delay = (syncFun, timeout = 0, context) ->
     (args...,cb) ->
-        if "function" isnt typeof cb
+        if not isFunction cb
             args = [args...,cb]
             cb = ->
         setTimeout ->
@@ -16,7 +18,7 @@ delay = (syncFun, timeout = 0, context = this) ->
 delay.doc = """
 # `delay( syncFun )` turns `syncFun` into an async functions.
 #
-# `delay(syncFun, timeout = 0, context = this)` defines an async
+# `delay(syncFun, timeout = 0, context = undefined)` defines an async
 # function, which, when called, will be execuded with delay `timeout`.
 """
 

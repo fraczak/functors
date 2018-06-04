@@ -1,10 +1,11 @@
-{flatten} = require "../helpers"
+{flatten, isArray} = require "../helpers"
 
 _concurrent = (funcs) ->
     if funcs.length is 0
         return (cb) ->
             cb "EMPTY-UNION", null
     (args, cb = ->) ->
+        args = (args for i in [1..funcs.length]) unless isArray args
         if args.length isnt funcs.length
             throw new Error("Number of actual parameters doesn't match!!!")
         counter = funcs.length
