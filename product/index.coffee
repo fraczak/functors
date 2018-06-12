@@ -20,7 +20,7 @@ _product = (funcs) ->
           errors[i] = err if err?
           result[i] = data
           if counter is 0
-            errors = null if errors.length is 0
+            errors = null if isEmpty errors
             cb errors, result
 
 product = (funcs...) ->
