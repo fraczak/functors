@@ -32,6 +32,14 @@ test = ->
   assert not helpers.isEmpty 0
   assert not helpers.isEmpty ( -> )
 
+  assert not helpers.isNumber null
+  assert not helpers.isNumber []
+  assert not helpers.isNumber "1"
+  assert not helpers.isNumber ""
+  assert helpers.isNumber 0
+  assert helpers.isNumber 123
+  assert helpers.isNumber 123/234
+
   true
 
 test()

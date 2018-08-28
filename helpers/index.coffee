@@ -13,6 +13,9 @@ flatten = (args) ->
 isString = (x) ->
   (typeof x is "string") or (x instanceof String)
 
+isNumber = (x) ->
+  (typeof x is "number") or (x instanceof Number)
+
 isFunction = (x) ->
   typeof x is "function"
 
@@ -32,11 +35,13 @@ module.exports =
   isString: isString
   isFunction: isFunction
   isEmpty: isEmpty
+  isNumber: isNumber
 
   doc: '''
 # Helper (synchronous) functions:
 #  flatten: e.g., [[1,2],3,4] -> [1,2,3,4] 
 #  isArray: e.g., [1,2,3] -> true
+#  isNumber: e.g., 0 -> true 
 #  isString: e.g., 123 -> false
 #  isFunction: ...
 #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
