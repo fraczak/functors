@@ -1,43 +1,48 @@
+{isFunction} = require "../helpers"
+
 class LazyValue
-    constructor: (fetch) ->
-        _fetch = fetch
-        $ = this
-        $.get = (cb = -> ) ->
-            _cb = cb
-            _cbs =  [ _cb ]
-            setTimeout ->
-                _fetch (err,data) ->
-                    _data = data
-                    _err = err
-                    while _cbs.length
-                        _cbs.shift() _err, _data
-                    $.get = (cb = -> ) ->
-                        cb _err, _data
-                        return $
-            , 0
-            $.get = (cb = -> ) ->
-                _cbs.push cb
-                return $
+  constructor: (fetch) ->
+    throw new Error("It's not a function!") unless isFunction fetch 
+    _fetch = fetch
+    $ = this
+    $.get = (cb = -> ) ->
+      _cb = cb
+      _cbs =  [ _cb ]
+      setTimeout ->
+        _fetch (err,data) ->
+          $._data = data
+          $._err = err if err
+          while _cbs.length
+            _cbs.shift() err, data
+          $.get = (cb = -> ) ->
+            cb $._err, $._data
             return $
-    get: (cb = (err, value) -> ) ->
-        # the method definition will be overwritten by constructor
-    select: LazyValue.select = select = (args..., cb) ->
-        if args.length is 1
-            args = [this, args...]
-        [obj, path] = args
-        if obj.constructor.name is "LazyValue"
-            obj.get (err, val) ->
-                return cb(err) if err
-                select val, path, cb
-        else if path.length is 0
-            cb null, obj
-        else
-            do (field = path.shift()) ->
-                o = obj[field]
-                if o
-                    select o, path, cb
-                else
-                    cb new Error("No field '#{field}' in: #{obj}")
+      , 0
+      $.get = (cb = -> ) ->
+        _cbs.push cb
+        return $
+      return $
+  get: (cb = (err, value) -> ) ->
+    # the method definition will be overwritten by constructor
+  select: (path, cb) ->
+    select this, path, cb
+
+select = (obj, path, cb) ->
+  if obj?.constructor?.name is "LazyValue"
+    obj.get (err, val) ->
+      return cb(err) if err
+      select val, path, cb
+  else if path.length is 0
+    cb null, obj
+  else
+    do (field = path.shift()) ->
+      try
+        select obj[field], path, cb
+      catch e
+        cb e
+  undefined
+
+LazyValue.select = select
 
 LazyValue.doc = """
 # `value = new LazyValue( fetch_fn )` creates a read only value initialized
