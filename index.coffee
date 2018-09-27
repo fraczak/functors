@@ -8,6 +8,7 @@ product   = require "./product"
 merge     = require "./merge"
 concurrent = require "./concurrent"
 map       = require "./map"
+continuation = require "./continuation"
 helpers   = require "./helpers"
 
 module.exports = {
@@ -21,5 +22,6 @@ module.exports = {
     merge
     concurrent
     map
+    continuation
     helpers
 }

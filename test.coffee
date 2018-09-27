@@ -12,6 +12,7 @@ modules = [
     "concurrent"
     "merge"
     "map"
+    "continuation"
     "helpers" ]
 
 tests = for part in modules
