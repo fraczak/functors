@@ -9,19 +9,21 @@ merge     = require "./merge"
 concurrent = require "./concurrent"
 map       = require "./map"
 continuation = require "./continuation"
+Maker     = require "./Maker"
 helpers   = require "./helpers"
 
 module.exports = {
-    LazyValue
-    retry
-    semaphore
-    throttle
-    delay
-    compose
-    product
-    merge
-    concurrent
-    map
-    continuation
-    helpers
+  LazyValue
+  retry
+  semaphore
+  throttle
+  delay
+  compose
+  product
+  merge
+  concurrent
+  map
+  continuation
+  helpers
+  Maker
 }

@@ -4,10 +4,11 @@ semaphore = (maxRunning = 10) ->
   queue = []
   running = 0
   alive = true
-  res = (fn, that = null) ->
+  res = (fn, that) ->
     (args..., cb) ->
+      _that = that ? this 
       if alive
-        queue.push fn.bind that, args..., (err, data...) ->
+        queue.push fn.bind _that, args..., (err, data...) ->
           running--
           if queue.length > 0
             running++

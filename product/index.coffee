@@ -3,6 +3,7 @@
 _product = (funcs) ->
   if isEmpty funcs
     return (args, cb) ->
+      return cb null, [] unless isArray args
       return cb null, [] if isEmpty args
       throw new Error("Number of actual parameters doesn't match!!!")
 

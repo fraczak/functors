@@ -13,7 +13,8 @@ modules = [
     "merge"
     "map"
     "continuation"
-    "helpers" ]
+    "helpers"
+    "Maker" ]
 
 tests = for part in modules
   [part, require "./#{part}/test.coffee"]
