@@ -13,7 +13,7 @@ delay = (syncFun, timeout = 0, context) ->
         data = syncFun.apply _context, args
       catch e
         err = e
-        cb err, data
+      cb err, data
     , timeout
     return
 delay.doc = """

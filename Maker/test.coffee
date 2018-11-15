@@ -4,6 +4,7 @@ Maker   = require "./index.coffee"
 
 delay   = require "../delay"
 product = require "../product"
+map     = require "../map"
 
 console.log " TESTING: Maker ..."
 
@@ -22,7 +23,8 @@ m = new Maker
 , {parallel: 2, log: true}
 
 test = (cb) ->
-  product(m.make.bind(m),m.get.bind(m)) [['b', 'a'], 'c'], cb
+  m.get 'a', cb
+#  map(m.get.bind m) [['b', 'a'], 'c'], cb
 
 test console.log.bind console
 

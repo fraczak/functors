@@ -34,26 +34,30 @@ class Maker
         val.deps ?= []
         valueFn = $.spec[v].value ? (cb) ->
           console.log "... simulating #{v}"
-          map($.get) val.deps, (err, data) ->
-            cb err, v + data
+          $.make val.deps, (err, data) ->
+            cb err, "v[#{data}]"
         val._value = new LazyValue (cb) ->
-          product(val.deps.map $.buildAsyncFn) val.deps, (err) ->
+          product(val.deps.map $.getFn) val.deps, (err) ->
             return cb err if err
             sem(valueFn, $) cb
 
-  get: (target, cb) ->
-    @spec[target]._value.get cb
-
-  buildAsyncFn: (target) =>
-    throw Error "Unknown target: '#{target}'" unless @spec[target]
-    (_token, cb) =>
-      if @opts.log
+  getFn: (target) =>
+    spec = @spec
+    log = @opts.log
+    throw Error "Unknown target: '#{target}'" unless spec[target]
+    (_token, cb) ->
+      if log
         console.log "... asking for '#{target}'"
-      @get target, cb
+      # @get target, cb
+      spec[target]._value.get cb
 
-  make: (targets..., cb) =>
+  get: (targets..., cb) ->
     targets = helpers.flatten targets
-    product(targets.map @buildAsyncFn) targets, cb
+    fns = targets.map @getFn
+    if targets.length is 1
+      fns[0] targets[0], cb
+    else
+      product(fns) targets, cb
     "done"
 
 Maker.doc = """
@@ -68,7 +72,7 @@ Maker.doc = """
 #          this.get 'a', (err, a) ->
 #            cb null, a + 1
 #  The 'targets' (in the above example 'a' and 'b') can be made by calling:
-#      maker.make ['a','b'], (err, result) ->
+#      maker.get ['a','b'], (err, result) ->
 #        console.log result // should give:[12, 13] 
 #  All targets are evaluated at most once, with 'this' set to `maker`.
 """
