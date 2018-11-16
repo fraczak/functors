@@ -30,15 +30,11 @@ test2 = (token, cb) ->
     assert.strictEqual data, "foo"
     cb null, true
 
-test = (cb) ->
+test = (_, cb) ->
   bla =  delay -> "bla"
   bla_as_cont = continuation bla, continuation.logOnly
   product(test1, test2) "token", (err, data) ->
     assert.deepStrictEqual data, [true,true] 
     cb null, true
-
-
-
-test console.log.bind console
 
 module.exports = test

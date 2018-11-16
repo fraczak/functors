@@ -2,23 +2,23 @@ throttle = require "./"
 map      = require "../map"
 delay    = require "../delay"
 
-console.log [" - - - - - -"]
-console.log "TESTING `throttle`"
-myFun = throttle console.log.bind(console), 500
+counter = 0
+
+myFun = throttle ( -> counter++), 600
 
 myTest = map (i, cont) ->
   d = i * 100
-  console.log " > calling myFun, i:#{i}, delay:#{d}"
-  delay(myFun,d) "   ... running myFun, i:#{i}, delay:#{d}", (err) ->
+  delay(myFun,d) (err) ->
     cont err, i
 
-test = (cb) ->
-  myTest [1..10], (err, data) ->
+throttleTest = (_, cb) ->
+  myTest [1..5], (err, data) ->
     return cb err if err
-    console.log data
-    console.log "Success!"
-    cb null, true
+    do delay ->
+      if counter isnt 2
+        return cb Error "Counter shuld be '2' and is #{counter}"
+      cb null, "throttleTest"
+      "hej"
+    , 600
 
-test console.log.bind console
-
-module.exports = test
+module.exports = throttleTest

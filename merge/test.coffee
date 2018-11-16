@@ -5,11 +5,11 @@ product = require "../product"
 merge = require "./"
 
 fun = (file, cb) ->
-  console.log " ... trying to read file #{file}..."
+  # console.log " ... trying to read file #{file}..."
   fs.readFile file, (err, buf) ->
     cb err, buf?.toString()
 
-test = (cb) ->
+test = (_, cb) ->
   product([
     merge(fun, fun, fun)
     merge(fun, fun)
@@ -18,6 +18,5 @@ test = (cb) ->
     assert err[1], undefined
     cb null, true
     
-test console.log.bind console
 
 module.exports = test

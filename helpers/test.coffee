@@ -3,8 +3,6 @@ assert = require "assert"
 helpers = require "./index.coffee"
 delay = require "../delay"
 
-console.log [" - - - - - -"]
-console.log "TESTING `helpers`"
 
 test = ->
   assert.deepEqual helpers.flatten([[1], 2, [3..10], [11..100]]), [1..100]
@@ -42,7 +40,6 @@ test = ->
 
   true
 
-test()
 
 module.exports = delay test
   

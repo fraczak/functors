@@ -9,7 +9,7 @@ double = delay((x) -> x+x)
 
 double2 = product double, double
 
-test = (cb) ->
+productTest = (_, cb) ->
   product(
     product(double, double2)
     product([])
@@ -21,10 +21,6 @@ test = (cb) ->
       assert r3, 6
       assert e1, []
       assert e2, []
-      console.log "Success!"
-      cb null, true
-    
+      cb null, "productTest"
 
-test console.log.bind console
-
-module.exports = test
+module.exports = productTest

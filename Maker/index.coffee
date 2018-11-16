@@ -4,9 +4,16 @@ LazyValue = require "../LazyValue"
 map       = require "../map"
 semaphore = require "../semaphore"
 
+normalizeDeps = (deps) ->
+  m = [].concat(deps).reduce (m, x) ->
+    m[x] = x if x?
+    m
+  , {}
+  Object.keys(m).sort()
+
 topoOrder = (spec) ->
   inDegree = Object.keys(spec).reduce (inDegree, v) ->
-    for x in spec[v].deps ? []
+    for x in spec[v].deps = normalizeDeps spec[v].deps
       inDegree[x] = if inDegree[x] then inDegree[x] + 1 else 1
     inDegree
   , {}
@@ -19,61 +26,51 @@ topoOrder = (spec) ->
     for y in deps
       inDegree[y]--
       starts.push y if inDegree[y] is 0
-  result.reverse()
+  result
 
 class Maker
-  constructor: ( @spec, @opts = {parallel: 10, log: false} ) ->
+  constructor: ( @spec, @opts = {parallel: 10} ) ->
     $ = this
-    @topo = topoOrder @spec
-    @sem = sem = semaphore @opts.parallel
-    if @topo.length isnt Object.keys(@spec).length
+    sem = semaphore @opts.parallel
+    if topoOrder(@spec).length isnt Object.keys(@spec).length
       throw Error "It is not a DAG!"
 
     for v, val of @spec
       do (v,val) ->
-        val.deps ?= []
         valueFn = $.spec[v].value ? (cb) ->
-          console.log "... simulating #{v}"
-          $.make val.deps, (err, data) ->
-            cb err, "v[#{data}]"
+          console.log " simulating '#{v}' ..."
+          $.get val.deps, (err, data) ->
+            cb err, "#{v}[#{data}]"
         val._value = new LazyValue (cb) ->
-          product(val.deps.map $.getFn) val.deps, (err) ->
+          $.get val.deps, (err) ->
             return cb err if err
             sem(valueFn, $) cb
 
-  getFn: (target) =>
+  _getFn: (target) =>
     spec = @spec
-    log = @opts.log
     throw Error "Unknown target: '#{target}'" unless spec[target]
     (_token, cb) ->
-      if log
-        console.log "... asking for '#{target}'"
-      # @get target, cb
       spec[target]._value.get cb
 
   get: (targets..., cb) ->
     targets = helpers.flatten targets
-    fns = targets.map @getFn
+    fns = targets.map @_getFn
     if targets.length is 1
       fns[0] targets[0], cb
     else
       product(fns) targets, cb
-    "done"
+    this
 
 Maker.doc = """
-#  `maker = new Maker(spec, opts = {parallel:100,log:false})` constructs a DAG of 'targets'.
+#  `maker = new Maker(spec, opts = {parallel:100})` constructs a DAG of 'targets'.
 #  Ex:
-#    spec =
-#      a:
-#        value: (cb) -> 12
-#      b:
-#        deps: ['a']
-#        value: (cb) ->
-#          this.get 'a', (err, a) ->
-#            cb null, a + 1
-#  The 'targets' (in the above example 'a' and 'b') can be made by calling:
+#    spec = {
+#      a: {value: (cb) -> 12},
+#      b: {deps: ['a'], value: (cb) -> this.get 'a', (err, a) -> cb null, a + 1}}
+#  The 'targets' (in the above example 'a' and 'b') are realized by calling:
 #      maker.get ['a','b'], (err, result) ->
-#        console.log result // should give:[12, 13] 
+#        console.log result
+#  # should give:[12, 13] 
 #  All targets are evaluated at most once, with 'this' set to `maker`.
 """
 

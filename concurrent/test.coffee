@@ -7,20 +7,15 @@ console.log " TESTING: concurrent ..."
 
 points = [1000, 500, 1000, 1000, 1000]
 
-fns = for t in points
-  do(t = t) ->
-    delay ->
-      console.log t
-      t
-    , t
+fns = points.map (t) ->
+  delay ->
+    t
+  , t
 
-test = (cb) ->
+concurrentTest = (_, cb) ->
   concurrent(fns) points, (err, r) ->
     return cb err if err
     assert r, Math.min points...
-    console.log "Success!"
-    cb null, true
+    cb null, "concurrentTest"
 
-test console.log.bind console
-
-module.exports = test
+module.exports = concurrentTest

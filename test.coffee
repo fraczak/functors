@@ -14,14 +14,21 @@ modules = [
     "map"
     "continuation"
     "helpers"
-    "Maker" ]
+    "Maker" 
+]
+testFn = (file, cb) ->
+  try require("./#{file}/test.coffee") file, cb
+  catch e
+    cb e
 
-tests = for part in modules
-  [part, require "./#{part}/test.coffee"]
+map(testFn) modules, (err, data) ->
+  for i in [0..modules.length-1]
+    if err?[i]
+      console.log "  ? - test '#{modules[i]}' failed! #{err[i]}"
+    else
+      console.log " OK - test '#{modules[i]}' succeeded: #{data[i]}"
 
-
-map( ([part,testFn], cb) ->
-  testFn (err, result) ->
-    assert result
-    cb err, [part,result] ) tests, (err, data) ->
-      console.log "\n---\nTested: \n", data
+  if err
+    process.exitCode = 1
+  else
+    console.log "All tests passed"

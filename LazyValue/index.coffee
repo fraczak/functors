@@ -11,7 +11,7 @@ class LazyValue
       setTimeout ->
         _fetch (err,data) ->
           $._data = data
-          $._err = err if err
+          $._err = err
           while _cbs.length
             _cbs.shift() err, data
           $.get = (cb = -> ) ->

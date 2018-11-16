@@ -1,20 +1,14 @@
 delay = require "./"
 map   = require "../map"
+product = require "../product"
 
-alog = delay console.log.bind(console)
+delayTest = (_, cb) ->
+  delay( -> 10 ) (err, d) ->
+    if d isnt 10
+      cb err, "Should be 10, is #{d}"
+    cb err, "delayTest"
 
-t = (i, cb) ->
-  console.log " calling #{i}"
-  d = 1100 - 100 * i
-  alog " .. running #{i} with delay #{d}..."
-  delay(((x) -> x), d) i, (err, data) ->
-    console.log " ....  #{data} done"
-    cb err, data
+module.exports = product [
+  delayTest
+  ]
 
-test = map(t)
-
-test [1..10], alog
-
-module.exports = (cb) ->
-  test [1..10], (err) ->
-    cb err, not err

@@ -11,7 +11,7 @@ map.obj = (fn) -> (args, cb) ->
     for i in [0..args.length-1]
       res[args[i]] = vals?[i]
     res
-    aux args, cb
+  aux args, cb
 map.doc = """
 # `map(asyncFn)` generates a new async function which takes an array of
 # k elements and a callback `cb` as arguments, runs the async function

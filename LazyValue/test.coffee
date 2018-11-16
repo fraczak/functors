@@ -1,64 +1,47 @@
+assert = require "assert"
+
 {product} = require "../"
 fs = require 'fs'
 ld = require 'lodash'
 
 LazyValue = require "./"
 
-test = product [
-    (_a,cb) ->
-        output = [" - - - - - -"]
-        output.push "TESTING `LazyValue`"
-        asyncVals = [
-            new LazyValue fs.readFile.bind fs, '/etc/passwd'
-            new LazyValue fs.readFile.bind fs, '/etc/passwd_2'
-            new LazyValue fs.readFile.bind fs, '/etc/passwd_3'
-        ]
-        print = (err, data) ->
-            if err
-                output.push "#{err}" + " - as expected"
-            else
-                output.push "DATA length:\n#{data.toString().length}"
-        (val.get print for val in asyncVals)
-        (val.get print for val in asyncVals)
 
-        l = -1
-        new LazyValue( (cb) -> fs.readFile("./index.coffee", cb) )
-            .get()
-            .get (e,d) ->
-                l = d
-            .get (e,d) ->
-                if d is l
-                    output.push "LazyValue() test OK"
-                    cb null, output.join '\n'
-                else
-                    cb new Error " * LazyValue() test failed!!!"
+LazyValueTest = (_token,cb) ->
+  x = new LazyValue fs.readFile.bind fs, '/etc/passwd'
+  x.get (err, data) ->
+    return cb err if err
+    x.get (err,d) ->
+      return cb err if err
+      if data isnt d
+        return cb Error "Not the same value"
+      cb null, "LazyValueTest"
 
-    (_a,cb) ->
-        output = [" - - - - - -"]
-        output.push "TESTING `select`"
+LazyValueErrorTest = (_token, cb) ->
+  x = new LazyValue fs.readFile.bind fs, '/etc/passwd-what'
+  x.get (err, data) ->
+    if err
+      return cb null, "LazyValueErrorTest"
+    cb Error "Unexpected success - that's BAD!"
 
-        trans_obj = (obj) ->
-            ld.assign {}, obj, rec: new LazyValue (cb) ->
-                fs.readFile "./#{obj.rec}", (err, val) ->
-                    cb null, trans_obj JSON.parse val
-        lazy_obj = trans_obj require "./select.json"
+LazyValueSelectTest = (_token, cb) ->
+  trans_obj = (obj) ->
+    ld.assign {}, obj, rec: new LazyValue (cb) ->
+      fs.readFile "./#{obj.rec}", (err, val) ->
+        cb null, trans_obj JSON.parse val
+  lazy_obj = trans_obj require "./select.json"
 
-        LazyValue.select lazy_obj, ['rec', 'f'], console.log.bind console, ">>>>>> Expected error: "
-        LazyValue.select lazy_obj, ['rec', 'rec','rec', 'g'], (err,val) ->
-            output.push val
-            lazy_obj.rec.select ['rec','rec', 'g'], (err,val) ->
-                output.push val
-                cb null, output.join('\n')
-    ]
+  LazyValue.select lazy_obj, ['rec','rec','rec','g'], (err, data) ->
+    return cb err if err 
+    lazy_obj.rec.select ['rec','f'], (err, data) ->
+      return cb err if err
+      if data isnt "field f1 of select.json"
+        return cb Error "Value doesn't match!"
+      cb null, "LazyValueSelectTest" 
 
-test [1,1], ( err, results) ->
-  for log in results
-    console.log log
-  if err
-    console.error err
-  else
-    console.log "\n   Done: all tests passed."
-
-module.exports = (cb) ->
-  test [1,1], (err) ->
-    cb err, not err
+module.exports = product [
+  LazyValueTest
+  LazyValueErrorTest
+  LazyValueSelectTest
+  ]
+  
