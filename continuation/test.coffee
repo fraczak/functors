@@ -8,33 +8,24 @@ concurrent = require "../concurrent/index.coffee"
 console.log " TESTING: continuation ..."
 
 test1 = (token, cb) ->
-  bla =  delay -> "bla"
-  bla_as_cont = continuation bla, continuation.logOnly
-  product([
-    bla
-    bla_as_cont
-    bla_as_cont
-  ]) token, (err, data) ->
-    assert.strictEqual data[0], "bla"
-    assert.strictEqual data[1], "bla"
-    assert.strictEqual data[2], "bla"
-    cb null, true
+  bla =  -> "bla"
+  bla_as_cont = continuation bla, nextCalls: continuation.runAll
+  data = [bla(), bla_as_cont(), bla_as_cont()]
+  cb (assert.strictEqual(data[0], "bla") ?
+      assert.strictEqual(data[1], "bla") ?
+      assert.strictEqual(data[2], "bla"))
+  , 'test1'
 
 test2 = (token, cb) ->
   bla =  delay -> "bla"
-  bla_as_cont = continuation bla, continuation.swallow
+  bla_as_cont = continuation bla
   concurrent(
     product bla_as_cont, bla_as_cont
-    delay (-> "foo"), 1000
+    delay (-> "foo"), 100
   ) token, (err, data) ->
-    assert.strictEqual data, "foo"
-    cb null, true
+    cb (err ? assert.strictEqual data, "foo"), 'test2'
 
-test = (_, cb) ->
-  bla =  delay -> "bla"
-  bla_as_cont = continuation bla, continuation.logOnly
-  product(test1, test2) "token", (err, data) ->
-    assert.deepStrictEqual data, [true,true] 
-    cb null, true
-
-module.exports = test
+module.exports = product [
+  test1
+  test2
+]

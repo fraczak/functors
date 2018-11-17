@@ -2,32 +2,37 @@
 delay        = require "../delay"
 
 
-swallow = (ran, _func, _args) ->
+doNotRun = (ran, _func, _args) ->
   console.error new Error "Continuation 'callback' called #{ran} times! All calls, but the first, are not executed."
 
-logOnly = (ran, func, args) ->
+runAll = (ran, func, args, context) ->
   console.error new Error "Continuation 'callback' called #{ran} times! All those calls are executed."
-  func args...
+  func.apply context, args
 
-_continuation = (func, nextCalls) ->
+_continuation = (func, nextCalls, context = this) ->
   do (ran = 0) ->
     (args...) ->
       ran++
       if ran is 1
-        func args...
+        func.apply context, args
       else
-        nextCalls ran, func, args
+        nextCalls ran, func, args, context
 
+continuation = (func, opts) ->
+  if isFunction opts
+    nextCalls = opts
+    context = this
+  else
+    nextCalls = opts?.nextCalls ? doNotRun
+    context = opts?.context ? this
+  return _continuation func, nextCalls, context if isFunction(func) and isFunction nextCalls
+  throw new Error "The argument must be a function!"
 
-continuation = (func, nextCalls = swallow) ->
-  return _continuation func, nextCalls if isFunction(func) and isFunction nextCalls
-  throw new Error "The arguments must be asynchronous functions!"
+continuation.runAll = runAll
 
-continuation.logOnly = logOnly
-continuation.swallow = swallow
 continuation.doc = '''
-# `continuation( asyncFn, allButFirstCalls = swallow)` generates a new
-# async function which, when called once behaves like `asyncFn`.
+# `continuation( fn, {context: this}` generates a new
+# function which, when called once behaves like `fn`.
 # All consecutive calls do nothing, except printing a warning.
 '''
 
