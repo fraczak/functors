@@ -62,15 +62,18 @@ class Maker
     this
 
 Maker.doc = """
-#  `maker = new Maker(spec, opts = {parallel:100})` constructs a DAG of 'targets'.
-#  Ex:
+#    maker = new Maker(spec, opts={parallel:10})
+#  constructs a DAG of 'targets'. Ex:
 #    spec = {
-#      a: {value: (cb) -> 12},
-#      b: {deps: ['a'], value: (cb) -> this.get 'a', (err, a) -> cb null, a + 1}}
+#      a: {value: (cb) -> cb null, 12},
+#      b: {deps:['a'],
+#          value: (cb) ->
+#            this.get 'a', (err, a) ->
+#              cb err, a+1 } }
 #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
-#      maker.get ['a','b'], (err, result) ->
+#      maker.get 'a','b', (err, result) ->
 #        console.log result
-#  # should give:[12, 13] 
+#  # should print: `[12, 13]` 
 #  All targets are evaluated at most once, with 'this' set to `maker`.
 """
 
