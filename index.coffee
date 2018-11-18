@@ -8,7 +8,6 @@ product   = require "./product"
 merge     = require "./merge"
 concurrent = require "./concurrent"
 map       = require "./map"
-continuation = require "./continuation"
 Maker     = require "./Maker"
 helpers   = require "./helpers"
 
@@ -23,7 +22,6 @@ module.exports = {
   merge
   concurrent
   map
-  continuation
   helpers
   Maker
 }

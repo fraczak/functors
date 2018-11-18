@@ -12,7 +12,6 @@ modules = [
     "concurrent"
     "merge"
     "map"
-    "continuation"
     "helpers"
     "Maker" 
 ]
