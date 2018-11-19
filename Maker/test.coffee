@@ -30,7 +30,7 @@ goodTest = (_, cb) ->
       value: (cb) ->
         this.get 'a', (err, data) ->
           delay( (-> "'c' after '#{data}'"), 200 ) cb
-  , {parallel: 1}
+  , 1
 
   m.get 'u1', 'a', 'b', (err, data) ->
     cb (err ? assert.deepStrictEqual ["u1[u[]]",'a','b'], data), "goodTest"

@@ -1,8 +1,8 @@
-helpers   = require "../helpers"
 product   = require "../product"
 LazyValue = require "../LazyValue"
 map       = require "../map"
 semaphore = require "../semaphore"
+{flatten, isArray, isFunction, isString} = require "../helpers"
 
 normalizeDeps = (deps) ->
   m = [].concat(deps).reduce (m, x) ->
@@ -13,7 +13,7 @@ normalizeDeps = (deps) ->
 
 topoOrder = (spec) ->
   inDegree = Object.keys(spec).reduce (inDegree, v) ->
-    for x in spec[v].deps = normalizeDeps spec[v].deps
+    for x in spec[v].deps
       inDegree[x] = if inDegree[x] then inDegree[x] + 1 else 1
     inDegree
   , {}
@@ -28,23 +28,44 @@ topoOrder = (spec) ->
       starts.push y if inDegree[y] is 0
   result
 
+
 class Maker
-  constructor: ( @spec, @opts = {parallel: 10} ) ->
+  constructor: ( spec, @parallel = 10 ) ->
     $ = this
-    sem = semaphore @opts.parallel
+    sem = semaphore @parallel
+    @spec = Object.keys(spec).reduce (res, target) ->
+      switch
+        when isString(spec[target]) or isArray(spec[target])
+          res[target] =
+            deps: normalizeDeps spec[target]
+            value: $._defaultValue target
+        when isFunction spec[target]
+          res[target] =
+            deps: []
+            value: spec[target]
+        else
+          res[target] =
+            deps: normalizeDeps spec[target].deps
+            value: spec[target].value ? $._defaultValue target
+      res
+    , {}
+
     if topoOrder(@spec).length isnt Object.keys(@spec).length
       throw Error "It is not a DAG!"
 
     for v, val of @spec
-      do (v,val) ->
-        valueFn = $.spec[v].value ? (cb) ->
-          console.log " simulating '#{v}' ..."
-          $.get val.deps, (err, data) ->
-            cb err, "#{v}[#{data}]"
+      do (v=v,val=val) ->
         val._value = new LazyValue (cb) ->
           $.get val.deps, (err) ->
             return cb err if err
-            sem(valueFn, $) cb
+            sem(val.value, $) cb
+
+  _defaultValue: (target) =>
+    $ = this
+    (cb) ->
+      console.log " simulating '#{target}' ..."
+      $.get $.spec[target].deps, (err, data) ->
+        cb err, "#{target}[#{data}]"
 
   _getFn: (target) =>
     spec = @spec
@@ -53,7 +74,7 @@ class Maker
       spec[target]._value.get cb
 
   get: (targets..., cb) ->
-    targets = helpers.flatten targets
+    targets = flatten targets
     fns = targets.map @_getFn
     if targets.length is 1
       fns[0] targets[0], cb
