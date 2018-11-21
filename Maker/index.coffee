@@ -28,28 +28,29 @@ topoOrder = (spec) ->
       starts.push y if inDegree[y] is 0
   result
 
-_defaultValue = ($, deps, target) =>
-    (cb) ->
-      console.log " simulating '#{target}' ..."
-      $.get deps, (err, data) ->
-        cb err, "#{target}[#{data}]"
-
-_getFn = (spec,target) =>
-    throw Error "Unknown target: '#{target}'" unless spec[target]
-    (_token, cb) ->
-      spec[target]._value.get cb
-
 class Maker
   constructor: ( spec, parallel = 10 ) ->
     $ = this
     sem = semaphore @parallel
+
+    _defaultValue = (deps, target) ->
+      (cb) ->
+        console.log " simulating '#{target}' ..."
+        $.get deps, (err, data) ->
+          cb err, "#{target}[#{data}]"
+
+    _getFn = (target) ->
+      throw Error "Unknown target: '#{target}'" unless spec[target]
+      (_token, cb) ->
+        spec[target]._value.get cb
+
     spec = Object.keys(spec).reduce (res, target) ->
       switch
         when isString(spec[target]) or isArray(spec[target])
           deps = normalizeDeps spec[target]
           res[target] =
             deps: deps
-            value: _defaultValue $, deps, target
+            value: _defaultValue deps, target
         when isFunction spec[target]
           res[target] =
             deps: []
@@ -58,7 +59,7 @@ class Maker
           deps = normalizeDeps spec[target].deps
           res[target] =
             deps: deps
-            value: spec[target].value ? _defaultValue $, deps, target
+            value: spec[target].value ? _defaultValue deps, target
       res
     , {}
 
@@ -74,7 +75,7 @@ class Maker
 
     $.get = (targets..., cb) ->
       targets = flatten targets
-      fns = targets.map _getFn.bind null, spec
+      fns = targets.map _getFn
       if targets.length is 1
         fns[0] targets[0], cb
       else
@@ -83,7 +84,7 @@ class Maker
 
 
 Maker.doc = """
-#    maker = new Maker(spec, opts={parallel:10})
+#    maker = new Maker(spec, parallel:10)
 #  constructs a DAG of 'targets'. Ex:
 #    spec = {
 #      a: (cb) => cb(null, 12),

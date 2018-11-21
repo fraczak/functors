@@ -52,41 +52,9 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     > coffee doc.coffee
 
 
-    LazyValue:
-    -----------
-    # `value = new LazyValue( fetch_fn )` creates a read only value initialized
-    # by an async `fetch_fn`. The value is read by `value.get( cb )`.  E.g.:
-    #
-    #   > var val = new LazyValue(function(cb){fs.readFile('/etc/passwd', cb);});
-    #   > val.get( function( err, data ){ console.log(data.toString() ) });
-    #
-    # There is also a helper method `select`:
-    # `select(obj, path, cb)` a field `obj.path` in `obj` which may contain
-    # `LazyValue`s.
-    # The callback `cb(err,val)` is called once value `val` of `obj.path`
-    # is retrived or error occurs.
+    > functors@2.2.0 doc /home/wojtek/gits/functors
+    > coffee doc.coffee
 
-    retry:
-    -----------
-    #    `retry(asyncFun)` transforms `asyncFun` into another async function
-    # which will try executing `asyncFun` twice, if error, before calling its `callback`.
-    # Actually, the signature is:
-    #   `retry(asyncFun,times=2,interval=500)`
-    # and it returns an async function.
-
-    semaphore:
-    -----------
-    #  `semaphore(maxRunning = 10)` constructs a constrained execution context and
-    #  returns a function `function(fn, that = null)` that constructs a function
-    #  which behaves as it's argument `fn`, unless there are already `maxRunning`
-    #  functions running in this resource's context. In such a case, the
-    #  execution is delayed.
-
-    throttle:
-    -----------
-    #  `throttle(fn, waitTime = 2000)` constructs a function, which behaves
-    #  as its argument `fn`, unless it is called in intervals smaller than `waitTime`.
-    #  In that case only the last call within that `waiting time` will be made.
 
     delay:
     -----------
@@ -107,6 +75,13 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     # the async functions with the elements of the array. Finnaly, it calls `cb`
     # with the array of results
 
+    map:
+    -----------
+    # `map(asyncFn)` generates a new async function which takes an array of
+    # k elements and a callback `cb` as arguments, runs the async function
+    # with every element of the array. Finnaly, it calls `cb`
+    # with the array of results
+
     merge:
     -----------
     # `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into another
@@ -124,12 +99,55 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     # The first function which succeeds, (err = null), calls `cb`
     # with its results.
 
-    map:
+    semaphore:
     -----------
-    # `map(asyncFn)` generates a new async function which takes an array of
-    # k elements and a callback `cb` as arguments, runs the async function
-    # with every element of the array. Finnaly, it calls `cb`
-    # with the array of results
+    #  `semaphore(maxRunning = 10)` constructs a constrained execution context and
+    #  returns a function `function(fn, that = null)` that constructs a function
+    #  which behaves as it's argument `fn`, unless there are already `maxRunning`
+    #  functions running in this resource's context. In such a case, the
+    #  execution is delayed.
+
+    retry:
+    -----------
+    #    `retry(asyncFun)` transforms `asyncFun` into another async function
+    # which will try executing `asyncFun` twice, if error, before calling its `callback`.
+    # Actually, the signature is:
+    #   `retry(asyncFun,times=2,interval=500)`
+    # and it returns an async function.
+
+    throttle:
+    -----------
+    #  `throttle(fn, waitTime = 2000)` constructs a function, which behaves
+    #  as its argument `fn`, unless it is called in intervals smaller than `waitTime`.
+    #  In that case only the last call within that `waiting time` will be made.
+
+    LazyValue:
+    -----------
+    # `value = new LazyValue( fetch_fn )` creates a read only value initialized
+    # by an async `fetch_fn`. The value is read by `value.get( cb )`.  E.g.:
+    #
+    #   > var val = new LazyValue(function(cb){fs.readFile('/etc/passwd', cb);});
+    #   > val.get( function( err, data ){ console.log(data.toString() ) });
+    #
+    # There is also a helper method `select`:
+    # `select(obj, path, cb)` a field `obj.path` in `obj` which may contain
+    # `LazyValue`s.
+    # The callback `cb(err,val)` is called once value `val` of `obj.path`
+    # is retrived or error occurs.
+
+    Maker:
+    -----------
+    #    maker = new Maker(spec, parallel:10)
+    #  constructs a DAG of 'targets'. Ex:
+    #    spec = {
+    #      a: (cb) => cb(null, 12),
+    #      b: {deps: 'a',
+    #          value: function(cb){
+    #            this.get('a', (err, a) => cb(err, a+1)) }}}
+    #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
+    #     maker.get('a','b', (err, result) => console.log(result))
+    #  # should print: `[12, 13]` 
+    #  All targets are evaluated at most once, with 'this' set to `maker`.
 
     helpers:
     -----------
@@ -141,16 +159,3 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     #  isFunction: ...
     #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
 
-    Maker:
-    -----------
-    #    maker = new Maker(spec, opts={parallel:10})
-    #  constructs a DAG of 'targets'. Ex:
-    #    spec = {
-    #      a: (cb) => cb(null, 12),
-    #      b: {deps: 'a',
-    #          value: function(cb){
-    #            this.get('a', (err, a) => cb(err, a+1)) }}}
-    #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
-    #     maker.get('a','b', (err, result) => console.log(result))
-    #  # should print: `[12, 13]` 
-    #  All targets are evaluated at most once, with 'this' set to `maker`.

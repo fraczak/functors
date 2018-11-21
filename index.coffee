@@ -12,16 +12,16 @@ Maker     = require "./Maker"
 helpers   = require "./helpers"
 
 module.exports = {
-  LazyValue
-  retry
-  semaphore
-  throttle
   delay
   compose
   product
+  map
   merge
   concurrent
-  map
-  helpers
+  semaphore
+  retry
+  throttle
+  LazyValue
   Maker
+  helpers
 }
