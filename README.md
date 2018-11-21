@@ -48,8 +48,9 @@ The same in `coffee-script`:
 
 By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
-    > functors@1.3.0 doc /home/wojtek/gits/functors
+    > functors@2.2.0 doc /home/wojtek/gits/functors
     > coffee doc.coffee
+
 
     LazyValue:
     -----------
@@ -91,7 +92,7 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     -----------
     # `delay( syncFun )` turns `syncFun` into an async functions.
     #
-    # `delay(syncFun, timeout = 0, context = this)` defines an async
+    # `delay(syncFun, timeout = 0, context = undefined)` defines an async
     # function, which, when called, will be execuded with delay `timeout`.
 
     compose:
@@ -108,15 +109,18 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
     merge:
     -----------
-    # `merge(aFun1, aFun2, ...)` transforms `aFun1, ...` into another async function
-    # which takes two arguments, `[args], cb`, and will try executing `aFun1(args[0])`
-    # and if error it will try aFun2(args[1]), and so on...
+    # `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into another
+    # async function which takes two arguments, `[args], cb`, and will
+    # try executing in order `afn1(args[0],cb)` and if error occurs
+    # it will try afn2(args[1], cb), and so on, till one of the calls
+    # does not generate an error.
 
     concurrent:
     -----------
     # `concurrent(aFn1, aFn2, ..., aFnk)` generates a new async function
-    # which takes an array of k elements and a callback `cb` as arguments, runs
-    # the afunctions cuncurrently with the elements of the array, respectively.
+    # which takes an array of k elements and a callback `cb` as arguments,
+    # runs the functions cuncurrently with the elements of the array,
+    # respectively.
     # The first function which succeeds, (err = null), calls `cb`
     # with its results.
 
@@ -132,7 +136,21 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     # Helper (synchronous) functions:
     #  flatten: e.g., [[1,2],3,4] -> [1,2,3,4] 
     #  isArray: e.g., [1,2,3] -> true
+    #  isNumber: e.g., 0 -> true 
     #  isString: e.g., 123 -> false
     #  isFunction: ...
     #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
 
+    Maker:
+    -----------
+    #    maker = new Maker(spec, opts={parallel:10})
+    #  constructs a DAG of 'targets'. Ex:
+    #    spec = {
+    #      a: (cb) => cb(null, 12),
+    #      b: {deps: 'a',
+    #          value: function(cb){
+    #            this.get('a', (err, a) => cb(err, a+1)) }}}
+    #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
+    #     maker.get('a','b', (err, result) => console.log(result))
+    #  # should print: `[12, 13]` 
+    #  All targets are evaluated at most once, with 'this' set to `maker`.

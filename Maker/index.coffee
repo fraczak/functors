@@ -86,14 +86,12 @@ Maker.doc = """
 #    maker = new Maker(spec, opts={parallel:10})
 #  constructs a DAG of 'targets'. Ex:
 #    spec = {
-#      a: {value: (cb) -> cb null, 12},
-#      b: {deps:['a'],
-#          value: (cb) ->
-#            this.get 'a', (err, a) ->
-#              cb err, a+1 } }
+#      a: (cb) => cb(null, 12),
+#      b: {deps: 'a',
+#          value: function(cb){
+#            this.get('a', (err, a) => cb(err, a+1)) }}}
 #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
-#      maker.get 'a','b', (err, result) ->
-#        console.log result
+#     maker.get('a','b', (err, result) => console.log(result))
 #  # should print: `[12, 13]` 
 #  All targets are evaluated at most once, with 'this' set to `maker`.
 """
