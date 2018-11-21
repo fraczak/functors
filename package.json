@@ -1,7 +1,7 @@
 {
   "name": "functors",
-  "version": "2.2.0",
-  "description": "A collection of 'async' function generators and/or transformers",
+  "version": "2.2.1",
+  "description": "A collection of 'async-by-continuation' function generators and/or transformers",
   "main": "index.js",
   "scripts": {
     "prepublish": "coffee -c index.coffee */index.coffee",

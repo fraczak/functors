@@ -1,60 +1,65 @@
-`functors` is a collection of "_async_" function generators and/or
-transformers.
+`functors` is a collection of "_async-by-continuation_" function
+generators and/or transformers.
 
 To install:
 
     npm i functors
 
-An example:
+An _async-by-continuation_ function is a function which almost always
+takes two arguments, the first being the input argument used by the
+function and the second one being the continuation callback. The
+continuation callback is called with two arguments: error (`null` if
+none) and the actual result computed by the _async-by-continuation_
+function.
+
+For example, the following is a function which computes the sum of
+`numbers` and which adheres to the above convention:
+
+    var add = function(numbers, cb) {
+      try {
+        cb( null, numbers.reduce( function(result, x) { return result + x; }, 0));
+      } catch(e) { cb(e); }};
+
+One can use `delay` to rewrite the above function as:
+
+    var delay = require('functors/delay');
+    var add = delay( function(numbers) {
+      return numbers.reduce( function(result, x){ return result + x; }, 0) } 
+    );
+
+The _async-by-continuation_ functions can be composed by using
+`compose`, `product`, `map`, `merge`, and `concurrent`.
+
+For example:
 
     var delay   = require("functors/delay"),
-        product = require("functors/product"),
-        compose = require("functors/compose");
+        compose = require("functors/compose"),
+        map     = require("functors/map"),
+        product = require("functors/product");
 
-    var fns = [
-      function(x){ return x + 1; },
-      function(x){ return x + x; },
-      function(x){ return x * x; }
-    ].map(function(f){ return delay(f); });
+    var f1 = delay( (x) => x + 1 ),
+        f2 = delay( (x) => x + x ),
+        f3 = delay( (x) => x * x );
 
-    compose(fns)(1, function(err, data) {
+    compose(f1,f2,f3)(1, function(err, data) {
       console.log("compose yields " + data);
     });
     // compose yields 16
 
-    product(fns)([1,2,3], function(err, data) {
-      console.log("product yields " + data);
+    product(f1,f2,f3)([1,2,3], function(err, data) {
+      console.log("product yields", data);
     });
-    // product yields 2,4,9
+    // product yields [ 2, 4, 9 ]
 
-
-The same in `coffee-script`:
-
-    {delay, product, compose} = require "functors"
-
-    fns = ( delay f for f in [
-        (x) -> x + 1
-        (x) -> x + x
-        (x) -> x * x
-    ] )
-
-    compose(fns) 1, (err, data) ->
-        console.log "compose yields #{data}"
-    # compose yields 16
-
-    product(fns) [1,2,3], (err, data) ->
-        console.log "product yields #{data}"
-    # product yields 2,4,9
+    map(compose(f1,f2,f3))([1,2,3], function(err, data) {
+      console.log("map(compose(f1,f2,f3)) on [1,2,3] yields", data)
+    });
+    // map(compose(f1,f2,f3)) on [1,2,3] yields [ 16, 36, 64 ]
 
 By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
-    > functors@2.2.0 doc /home/wojtek/gits/functors
+    > functors@2.2.1 doc /home/wojtek/gits/functors
     > coffee doc.coffee
-
-
-    > functors@2.2.0 doc /home/wojtek/gits/functors
-    > coffee doc.coffee
-
 
     delay:
     -----------
@@ -137,13 +142,13 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
     Maker:
     -----------
-    #    maker = new Maker(spec, parallel:10)
+    #    maker = new Maker(spec)
     #  constructs a DAG of 'targets'. Ex:
-    #    spec = {
+    #    maker = new Maker({
     #      a: (cb) => cb(null, 12),
     #      b: {deps: 'a',
     #          value: function(cb){
-    #            this.get('a', (err, a) => cb(err, a+1)) }}}
+    #            this.get('a', (err, a) => cb(err, a+1)) }}})
     #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
     #     maker.get('a','b', (err, result) => console.log(result))
     #  # should print: `[12, 13]` 
@@ -158,4 +163,3 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     #  isString: e.g., 123 -> false
     #  isFunction: ...
     #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
-
