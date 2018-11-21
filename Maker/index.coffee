@@ -28,59 +28,59 @@ topoOrder = (spec) ->
       starts.push y if inDegree[y] is 0
   result
 
+_defaultValue = ($, deps, target) =>
+    (cb) ->
+      console.log " simulating '#{target}' ..."
+      $.get deps, (err, data) ->
+        cb err, "#{target}[#{data}]"
+
+_getFn = (spec,target) =>
+    throw Error "Unknown target: '#{target}'" unless spec[target]
+    (_token, cb) ->
+      spec[target]._value.get cb
 
 class Maker
-  constructor: ( spec, @parallel = 10 ) ->
+  constructor: ( spec, parallel = 10 ) ->
     $ = this
     sem = semaphore @parallel
-    @spec = Object.keys(spec).reduce (res, target) ->
+    spec = Object.keys(spec).reduce (res, target) ->
       switch
         when isString(spec[target]) or isArray(spec[target])
+          deps = normalizeDeps spec[target]
           res[target] =
-            deps: normalizeDeps spec[target]
-            value: $._defaultValue target
+            deps: deps
+            value: _defaultValue $, deps, target
         when isFunction spec[target]
           res[target] =
             deps: []
             value: spec[target]
         else
+          deps = normalizeDeps spec[target].deps
           res[target] =
-            deps: normalizeDeps spec[target].deps
-            value: spec[target].value ? $._defaultValue target
+            deps: deps
+            value: spec[target].value ? _defaultValue $, deps, target
       res
     , {}
 
-    if topoOrder(@spec).length isnt Object.keys(@spec).length
+    if topoOrder(spec).length isnt Object.keys(spec).length
       throw Error "It is not a DAG!"
 
-    for v, val of @spec
+    for v, val of spec
       do (v=v,val=val) ->
         val._value = new LazyValue (cb) ->
           $.get val.deps, (err) ->
             return cb err if err
             sem(val.value, $) cb
 
-  _defaultValue: (target) =>
-    $ = this
-    (cb) ->
-      console.log " simulating '#{target}' ..."
-      $.get $.spec[target].deps, (err, data) ->
-        cb err, "#{target}[#{data}]"
+    $.get = (targets..., cb) ->
+      targets = flatten targets
+      fns = targets.map _getFn.bind null, spec
+      if targets.length is 1
+        fns[0] targets[0], cb
+      else
+        product(fns) targets, cb
+      this
 
-  _getFn: (target) =>
-    spec = @spec
-    throw Error "Unknown target: '#{target}'" unless spec[target]
-    (_token, cb) ->
-      spec[target]._value.get cb
-
-  get: (targets..., cb) ->
-    targets = flatten targets
-    fns = targets.map @_getFn
-    if targets.length is 1
-      fns[0] targets[0], cb
-    else
-      product(fns) targets, cb
-    this
 
 Maker.doc = """
 #    maker = new Maker(spec, opts={parallel:10})
