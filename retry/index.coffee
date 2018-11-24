@@ -1,6 +1,6 @@
 retry = (asyncFun, n = 2, timeout = 500) ->
   count = n
-  throw new Error("`n` must be at least 1 (one) but was: `#{n}`") unless count >= 1
+  throw Error("`n` must be at least 1 (one) but was: `#{n}`") unless count >= 1
   (args...) ->
     [params..., cb] = orig_args = args
     iterFun = ->
@@ -14,8 +14,8 @@ retry = (asyncFun, n = 2, timeout = 500) ->
 
 retry.doc = '''
 #    `retry(asyncFun)` transforms `asyncFun` into another async function
-# which will try executing `asyncFun` twice, if error, before calling its `callback`.
-# Actually, the signature is:
+# which will try executing `asyncFun` twice, if an error occurs, before
+# calling its `callback`. Actually, the signature is:
 #   `retry(asyncFun,times=2,interval=500)`
 # and it returns an async function.
 '''

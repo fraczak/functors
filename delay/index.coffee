@@ -19,8 +19,8 @@ delay = (syncFun, timeout = 0, context) ->
 delay.doc = """
 # `delay( syncFun )` turns `syncFun` into an async functions.
 #
-# `delay(syncFun, timeout = 0, context = undefined)` defines an async
-# function, which, when called, will be execuded with delay `timeout`.
+# `delay(syncFun, timeout = 0)` defines an async function,
+# which, when called, will be execuded with delay `timeout`.
 """
 
 module.exports = delay

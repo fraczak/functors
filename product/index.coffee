@@ -23,6 +23,7 @@ _product = (funcs) ->
           if counter is 0
             errors = null if isEmpty errors
             cb errors, result
+    return
 
 product = (funcs...) ->
   _product flatten funcs

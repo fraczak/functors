@@ -1,12 +1,12 @@
-_cancel = "[functors/semaphore] RESOURCE ALREADY KILLED - execution cancelled!"
+_cancel = "[functors/semaphore] RESOURCE KILLED - execution cancelled!"
 
 semaphore = (maxRunning = 10) ->
   queue = []
   running = 0
   alive = true
-  res = (fn, that) ->
+  res = (fn, context) ->
     (args..., cb) ->
-      _that = that ? this 
+      _that = context ? this 
       if alive
         queue.push fn.bind _that, args..., (err, data...) ->
           running--
@@ -16,7 +16,7 @@ semaphore = (maxRunning = 10) ->
               queue.shift()()
             else
               queue.shift()
-              cb _cancel
+              cb Error _cancel
           cb err, data...
         if (running < maxRunning)
           running++
@@ -24,9 +24,9 @@ semaphore = (maxRunning = 10) ->
             queue.shift()()
           else
             queue.shift()
-            cb _cancel
+            cb Error _cancel
       else
-        cb _cancel
+        cb Error _cancel
   res.kill = ->
     alive = false
   res.resurrect = ->
@@ -34,11 +34,11 @@ semaphore = (maxRunning = 10) ->
   res
 
 semaphore.doc = """
-#  `semaphore(maxRunning = 10)` constructs a constrained execution context and
-#  returns a function `function(fn, that = null)` that constructs a function
-#  which behaves as it's argument `fn`, unless there are already `maxRunning`
-#  functions running in this resource's context. In such a case, the
-#  execution is delayed.
+#  `semaphore(maxRunning = 10)` constructs a 'semaphore' which is a
+#  function `function(afn, context)` that creates a new async
+#  function which behaves as its argument `afn`. If there are already
+#  `maxRunning` functions running against the semaphore, the execution
+#  is delayed.
 """
 
 module.exports = semaphore

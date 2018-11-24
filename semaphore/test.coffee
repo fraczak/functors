@@ -8,23 +8,33 @@ map      = require "../map"
 times2 = (x) ->
   x + x
 
-sixFns = ( delay(times2, 100) for i in [1..10] )
+tenFns = ( delay(times2, 100) for i in [1..10] )
 
-test = (parallel, cb) ->
+semInProduct = (parallel, cb) ->
   sem = semaphore(parallel)
   start = new Date()
-  product(sem f for f in sixFns) [1..10], (err, data1) ->
+  product(sem f for f in tenFns) [1..10], (err, data1) ->
     return cb err if err
     cb null, (new Date()) - start 
 
-semaphoreTest = (_, cb) ->
-  map(test) [1, 10], (err, [t1, t10]) ->
-    cb err if err
-    if 6
-      4 < Math.round(t1/t10) < 14
-      return cb null, "semaphoreTest[~#{Math.round(t1/t10)}]"
-    cb "Execution times do not match! t1=#{t1} vs t10=#{t10}"
+productTest = (_, cb) ->
+  map(semInProduct) [1, 10], (err, [t1, t10]) ->
+    cb (err or assert(4 < Math.round(t1/t10) < 14)),
+      "productTest[~#{Math.round(t1/t10)}]"
+
+semInMap = (parallel, cb) ->
+  sem = semaphore(parallel)
+  start = new Date()
+  map(sem tenFns[0]) [1..10], (err, data1) ->
+    return cb err if err
+    cb null, (new Date()) - start 
+
+mapTest = (_, cb) ->
+  map(semInMap) [1, 10], (err, [t1, t10]) ->
+    cb (err or assert(4 < Math.round(t1/t10) < 14)),
+      "mapTest[~#{Math.round(t1/t10)}]"
 
 module.exports = product [
-  semaphoreTest
+  productTest
+  mapTest
 ]

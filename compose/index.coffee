@@ -1,9 +1,9 @@
-{flatten, isFunction} = require "../helpers"
+{flatten, isFunction, isEmpty} = require "../helpers"
 
 _compose = (funcs) ->
-  if funcs.length is 0
+  if isEmpty funcs
     (args..., cb) ->
-      if 'function' isnt typeof cb
+      if not isFunction cb
         args = [args..., cb]
         cb = ->
       cb null, args...
