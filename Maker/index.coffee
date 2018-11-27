@@ -31,13 +31,12 @@ topoOrder = (spec) ->
 class Maker
   constructor: ( spec, parallel = 10 ) ->
     $ = this
-    sem = semaphore @parallel
+    sem = semaphore parallel
 
     _defaultValue = (deps, target) ->
-      (cb) ->
+      (o, cb) ->
         console.log " simulating '#{target}' ..."
-        $.get deps, (err, data) ->
-          cb err, "#{target}[#{data}]"
+        cb null, "#{target}[#{Object.keys(o).sort()}]"
 
     _getFn = (target) ->
       throw Error "Unknown target: '#{target}'" unless spec[target]
@@ -56,10 +55,10 @@ class Maker
             deps: []
             value: spec[target]
         else
-          deps = normalizeDeps spec[target].deps
+          deps = normalizeDeps spec[target]?.deps
           res[target] =
             deps: deps
-            value: spec[target].value ? _defaultValue deps, target
+            value: spec[target]?.value ? _defaultValue deps, target
       res
     , {}
 
@@ -69,9 +68,12 @@ class Maker
     for v, val of spec
       do (v=v,val=val) ->
         val._value = new LazyValue (cb) ->
-          $.get val.deps, (err) ->
+          $.get val.deps, (err, data) ->
             return cb err if err
-            sem(val.value, $) cb
+            o = [].concat(data).reduce (o,d,i) ->
+              o[val.deps[i]] = d; o
+            , {}
+            sem(val.value) o, cb
 
     $.get = (targets..., cb) ->
       targets = flatten targets
@@ -81,6 +83,7 @@ class Maker
       else
         product(fns) targets, cb
       this
+
 
 Maker.doc = """
 #    maker = new Maker(spec)

@@ -9,31 +9,24 @@ map     = require "../map"
 
 docTest = (_, cb) ->
   spec =
-    a: value: (cb) -> cb null, 12
+    a: value: delay (o) -> 12
     b:
       deps:['a'],
-      value: (cb) ->
-        this.get 'a', (err, a) ->
-          cb err, a+1
+      value: delay (o) -> o.a + 1
   maker = new Maker spec
   maker.get 'a', 'b', (err, data) ->
     cb (err ? assert.deepStrictEqual [12,13], data),  "docTest"
 
 goodTest = (_, cb) ->
   m = new Maker
-    a:  value: delay (-> 'a'), 200
-    b:  value: delay (-> 'b'), 200
-    u:  {}
-    u1: deps: ['u', 'u']
-    c:
-      deps: ['a']
-      value: (cb) ->
-        this.get 'a', (err, data) ->
-          delay( (-> "'c' after '#{data}'"), 200 ) cb
+    a:  delay (-> console.log 'a'; 'a'), 300
+    b:  delay (-> console.log 'b'; 'b'), 300
+    u:  null
+    u1: ['u', 'u']
   , 1
 
   m.get 'u1', 'a', 'b', (err, data) ->
-    cb (err ? assert.deepStrictEqual ["u1[u[]]",'a','b'], data), "goodTest"
+    cb (err ? assert.deepStrictEqual ["u1[u]",'a','b'], data), "goodTest"
 
 noDagTest = delay ->
   assert.throws ->
