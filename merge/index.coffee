@@ -28,10 +28,10 @@ merge = (funcs...) ->
   _merge flatten funcs
 
 merge.doc = '''
-# `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into another
-# async function which takes two arguments, `[args], cb`, and will
-# try executing in order `afn1(args[0],cb)` and if error occurs
-# it will try afn2(args[1], cb), and so on, till one of the calls
-# does not generate an error.
+# `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into a new
+# async function which takes two arguments, `[a1, a2, ...], cb`. 
+# It tries to  execute `afn1(a1,cb)` and if error occurs, it tries
+# `afn2(a2, cb)`, and so on, till one of the calls does not generate
+# an error.
 '''
 module.exports = merge

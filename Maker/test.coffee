@@ -11,7 +11,7 @@ docTest = (_, cb) ->
   spec =
     a: value: delay (o) -> 12
     b:
-      deps:['a'],
+      deps:'a',
       value: delay (o) -> o.a + 1
   maker = new Maker spec
   maker.get 'a', 'b', (err, data) ->

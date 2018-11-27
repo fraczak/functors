@@ -58,15 +58,16 @@ For example:
 
 By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
-    > functors@2.2.1 doc /home/wojtek/gits/functors
+    > functors@2.3.1 doc /home/wojtek/gits/functors
     > coffee doc.coffee
+
 
     delay:
     -----------
     # `delay( syncFun )` turns `syncFun` into an async functions.
     #
-    # `delay(syncFun, timeout = 0, context = undefined)` defines an async
-    # function, which, when called, will be execuded with delay `timeout`.
+    # `delay(syncFun, timeout = 0)` defines an async function,
+    # which, when called, will be execuded with delay `timeout`.
 
     compose:
     -----------
@@ -89,11 +90,11 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
     merge:
     -----------
-    # `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into another
-    # async function which takes two arguments, `[args], cb`, and will
-    # try executing in order `afn1(args[0],cb)` and if error occurs
-    # it will try afn2(args[1], cb), and so on, till one of the calls
-    # does not generate an error.
+    # `merge(afn1, afn2, ...)` transforms `afn1, afn2, ...` into a new
+    # async function which takes two arguments, `[a1, a2, ...], cb`. 
+    # It tries to  execute `afn1(a1,cb)` and if error occurs, it tries
+    # `afn2(a2, cb)`, and so on, till one of the calls does not generate
+    # an error.
 
     concurrent:
     -----------
@@ -106,17 +107,17 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
     semaphore:
     -----------
-    #  `semaphore(maxRunning = 10)` constructs a constrained execution context and
-    #  returns a function `function(fn, that = null)` that constructs a function
-    #  which behaves as it's argument `fn`, unless there are already `maxRunning`
-    #  functions running in this resource's context. In such a case, the
-    #  execution is delayed.
+    #  `semaphore(maxRunning = 10)` constructs a 'semaphore' which is a
+    #  function `function(afn, context)` that creates a new async
+    #  function which behaves as its argument `afn`. If there are already
+    #  `maxRunning` functions running against the semaphore, the execution
+    #  is delayed.
 
     retry:
     -----------
     #    `retry(asyncFun)` transforms `asyncFun` into another async function
-    # which will try executing `asyncFun` twice, if error, before calling its `callback`.
-    # Actually, the signature is:
+    # which will try executing `asyncFun` twice, if an error occurs, before
+    # calling its `callback`. Actually, the signature is:
     #   `retry(asyncFun,times=2,interval=500)`
     # and it returns an async function.
 
@@ -145,14 +146,12 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     #    maker = new Maker(spec)
     #  constructs a DAG of 'targets'. Ex:
     #    maker = new Maker({
-    #      a: (cb) => cb(null, 12),
+    #      a: (_,cb) => cb(null, 12),
     #      b: {deps: 'a',
-    #          value: function(cb){
-    #            this.get('a', (err, a) => cb(err, a+1)) }}})
-    #  The 'targets' (in the above example 'a' and 'b') are realized by calling:
+    #          value: function(deps,cb) { cb(err, deps.a + 1)) }}})
+    #  The 'targets' (in the example 'a' and 'b') are realized by calling:
     #     maker.get('a','b', (err, result) => console.log(result))
     #  # should print: `[12, 13]` 
-    #  All targets are evaluated at most once, with 'this' set to `maker`.
 
     helpers:
     -----------
