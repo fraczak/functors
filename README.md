@@ -58,13 +58,14 @@ For example:
 
 By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
+
     > functors@2.3.1 doc /home/wojtek/gits/functors
     > coffee doc.coffee
 
 
     delay:
     -----------
-    # `delay( syncFun )` turns `syncFun` into an async functions.
+    # `delay( syncFun )` turns `syncFun` into an async function.
     #
     # `delay(syncFun, timeout = 0)` defines an async function,
     # which, when called, will be execuded with delay `timeout`.
@@ -143,15 +144,15 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
     Maker:
     -----------
-    #    maker = new Maker(spec)
+    #     maker = new Maker(spec)
     #  constructs a DAG of 'targets'. Ex:
-    #    maker = new Maker({
-    #      a: (_,cb) => cb(null, 12),
-    #      b: {deps: 'a',
-    #          value: function(deps,cb) { cb(err, deps.a + 1)) }}})
-    #  The 'targets' (in the example 'a' and 'b') are realized by calling:
-    #     maker.get('a','b', (err, result) => console.log(result))
-    #  # should print: `[12, 13]` 
+    #     var Maker = require('functors/Maker'),
+    #       maker = new Maker({
+    #         a: (_,cb) => cb(null, 12),
+    #         b: {deps: 'a',
+    #             value: function(deps,cb) { cb(null, deps.a + 1); }}});
+    #      maker.get('a','b', (err, result) => console.log(result))
+    #     // should print: `[12, 13]`
 
     helpers:
     -----------

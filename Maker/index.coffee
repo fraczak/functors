@@ -86,15 +86,15 @@ class Maker
 
 
 Maker.doc = """
-#    maker = new Maker(spec)
+#     maker = new Maker(spec)
 #  constructs a DAG of 'targets'. Ex:
-#    maker = new Maker({
-#      a: (_,cb) => cb(null, 12),
-#      b: {deps: 'a',
-#          value: function(deps,cb) { cb(err, deps.a + 1)) }}})
-#  The 'targets' (in the example 'a' and 'b') are realized by calling:
-#     maker.get('a','b', (err, result) => console.log(result))
-#  # should print: `[12, 13]` 
+#     var Maker = require('functors/Maker'),
+#       maker = new Maker({
+#         a: (_,cb) => cb(null, 12),
+#         b: {deps: 'a',
+#             value: function(deps,cb) { cb(null, deps.a + 1); }}});
+#      maker.get('a','b', (err, result) => console.log(result))
+#     // should print: `[12, 13]`
 """
 
 module.exports = Maker
