@@ -5,7 +5,7 @@ class LazyValue
     throw new Error("It's not a function!") unless isFunction fetch 
     _fetch = fetch
     $ = this
-    $.get = (cb = -> ) ->
+    $.get = (..., cb) ->
       _cb = cb
       _cbs =  [ _cb ]
       setTimeout ->
@@ -18,11 +18,11 @@ class LazyValue
             cb $._err, $._data
             return $
       , 0
-      $.get = (cb = -> ) ->
+      $.get = (..., cb) ->
         _cbs.push cb
         return $
       return $
-  get: (cb = (err, value) -> ) ->
+  get: (..., cb = (err, value) -> ) ->
     # the method definition will be overwritten by constructor
   select: (path, cb) ->
     select this, path, cb

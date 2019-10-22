@@ -17,6 +17,14 @@ LazyValueTest = (_token,cb) ->
         return cb Error "Not the same value"
       cb null, "LazyValueTest"
 
+LazyValueProductTest = (_token,cb) ->
+  x = new LazyValue fs.readFile.bind fs, '/etc/passwd'
+  product(x.get, x.get) "token", (err,[data,d]) ->
+    return cb err if err
+    if data.toString() isnt d.toString()
+      return cb Error "Not the same value: #{data} != #{d}"
+    cb null, "LazyValueProductTest"
+
 LazyValueErrorTest = (_token, cb) ->
   x = new LazyValue fs.readFile.bind fs, '/etc/passwd-what'
   x.get (err, data) ->
@@ -41,6 +49,7 @@ LazyValueSelectTest = (_token, cb) ->
 
 module.exports = product [
   LazyValueTest
+  LazyValueProductTest
   LazyValueErrorTest
   LazyValueSelectTest
   ]
