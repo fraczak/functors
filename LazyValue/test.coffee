@@ -1,6 +1,6 @@
 assert = require "assert"
 
-{product} = require "../"
+{product, delay} = require "../"
 fs = require 'fs'
 ld = require 'lodash'
 
@@ -18,10 +18,10 @@ LazyValueTest = (_token,cb) ->
       cb null, "LazyValueTest"
 
 LazyValueProductTest = (_token,cb) ->
-  x = new LazyValue fs.readFile.bind fs, '/etc/passwd'
+  x = new LazyValue delay -> Math.random()
   product(x.get, x.get) "token", (err,[data,d]) ->
     return cb err if err
-    if data.toString() isnt d.toString()
+    if data isnt d
       return cb Error "Not the same value: #{data} != #{d}"
     cb null, "LazyValueProductTest"
 

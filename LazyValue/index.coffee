@@ -3,24 +3,28 @@
 class LazyValue
   constructor: (fetch) ->
     throw new Error("It's not a function!") unless isFunction fetch 
-    _fetch = fetch
+    @fetch = fetch
+    @state = "start"  # start, waiting, or ready
+    @cbs = []
     $ = this
     $.get = (..., cb) ->
-      _cb = cb
-      _cbs =  [ _cb ]
-      setTimeout ->
-        _fetch (err,data) ->
-          $._data = data
-          $._err = err
-          while _cbs.length
-            _cbs.shift() err, data
-          $.get = (cb = -> ) ->
-            cb $._err, $._data
-            return $
-      , 0
-      $.get = (..., cb) ->
-        _cbs.push cb
-        return $
+      switch $.state
+        when "start"
+          $.state = "waiting"
+          $.cbs.push cb
+          setTimeout ->
+            $.fetch (err,data) ->
+              $.state = "ready"
+              $.data = data
+              $.err = err
+              while $.cbs.length
+                $.cbs.shift() err, data
+          , 0
+        when "waiting"
+          $.cbs.push cb
+        when "ready" 
+          cb($.err, $.data)
+        else throw new Error "Unknown state: #{$.state}" 
       return $
   get: (..., cb = (err, value) -> ) ->
     # the method definition will be overwritten by constructor
