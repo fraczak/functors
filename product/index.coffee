@@ -14,15 +14,28 @@ _product = (funcs) ->
     counter = funcs.length
     result  = []
     errors  = []
+    ran = []
     for i in [0..counter-1]
       do (i = i) ->
         funcs[i] args[i], (err, data) ->
-          counter--
-          errors[i] = err if err?
+          if ran[i]
+            console.trace "A callback called more than once?"
+            console.error err if err?
+            if isArray errors[i]
+              for e in errors[i]
+                console.error e
+          else  
+            counter--
+          ran[i] = true
+          if err?
+            errors[i] ?= []
+            errors[i].push err
           result[i] = data
           if counter is 0
-            errors = null if isEmpty errors
-            cb errors, result
+            if isEmpty errors
+              cb null, result
+            else
+              cb errors, result
     return
 
 product = (funcs...) ->

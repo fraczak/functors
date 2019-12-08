@@ -1,6 +1,6 @@
 {
   "name": "functors",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "A collection of 'async-by-continuation' function generators and/or transformers",
   "main": "index.js",
   "scripts": {
