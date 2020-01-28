@@ -29,6 +29,15 @@ isEmpty = (x) ->
       return (not x) or Object.keys(x).length <= 0
   false
 
+withContinuation = (syncFn, context) ->
+  (args..., cb) ->
+    data = null
+    err = null
+    try
+      data = syncFn.apply context, args
+    catch e
+      err = e
+    cb err, data
 module.exports =
   flatten: flatten
   isArray: isArray
@@ -36,6 +45,7 @@ module.exports =
   isFunction: isFunction
   isEmpty: isEmpty
   isNumber: isNumber
+  withContinuation: withContinuation
 
   doc: '''
 # Helper (synchronous) functions:
@@ -45,4 +55,5 @@ module.exports =
 #  isString: e.g., 123 -> false
 #  isFunction: ...
 #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
+#  withContinuation: (fn) -> (args...,cb) -> cb null, fn args...
 '''

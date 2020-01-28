@@ -38,6 +38,10 @@ test = ->
   assert helpers.isNumber 123
   assert helpers.isNumber 123/234
 
+  helpers.withContinuation((x)->x+1) 1, (err, data) ->
+    assert not err?
+    assert.deepEqual data, 2
+
   true
 
 
