@@ -7,7 +7,7 @@ delay = (syncFun, timeout = 0, context) ->
       args = [args...,cb]
       cb = ->
     setTimeout ->
-      withContinuation(syncFun, context) agrs..., cb
+      withContinuation(syncFun, context) args..., cb
     , timeout
     return
 delay.doc = """
