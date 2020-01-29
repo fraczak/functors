@@ -1,6 +1,6 @@
-delay = require "./"
-map   = require "../map"
-product = require "../product"
+delay = require "./index.coffee"
+map   = require "../map/index.coffee"
+product = require "../product/index.coffee"
 
 delayTest = (_, cb) ->
   delay( -> 10 ) (err, d) ->
