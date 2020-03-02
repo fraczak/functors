@@ -38,6 +38,12 @@ withContinuation = (syncFn, context) ->
     catch e
       err = e
     cb err, data
+
+refrain = (promise, cb) ->
+    promise
+    .then (data) -> cb null, data
+    .catch (err) -> cb err ? Error "Broken Promise"
+      
 module.exports =
   flatten: flatten
   isArray: isArray
@@ -46,6 +52,7 @@ module.exports =
   isEmpty: isEmpty
   isNumber: isNumber
   withContinuation: withContinuation
+  refrain: refrain
 
   doc: '''
 # Helper (synchronous) functions:
@@ -56,4 +63,5 @@ module.exports =
 #  isFunction: ...
 #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
 #  withContinuation: (fn) -> (args...,cb) -> cb null, fn args...
+#  refrain: try to turn a Promise into an 'async-by-continuation' function
 '''
