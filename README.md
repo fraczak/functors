@@ -58,10 +58,8 @@ For example:
 
 By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
 
-
-    > functors@2.3.1 doc /home/wojtek/gits/functors
+    > functors@2.4.5 doc /home/wojtek/gits/functors
     > coffee doc.coffee
-
 
     delay:
     -----------
@@ -73,7 +71,13 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     compose:
     -----------
     # `compose(asyncFn1, asyncFn2, ...)` composes the asynchronous functions
-    # `asyncFn1`, `asyncFn2`, ...
+    # `asyncFn1`, `asyncFn2`, ... from left-to-right, e.g.,
+    # `compose(f1, f2, f3)(x, cb)` corresponds to something like:
+    #   f1(x, function(e, x) {
+    #           if (e) { return cb(e); }
+    #           f2(x, function(e, x) {
+    #                   if (e) { return cb(e); }
+    #                   f3(x, cb) }) })
 
     product:
     -----------
@@ -163,3 +167,5 @@ By running `npm run doc` (or `coffee doc.coffee`) we get the doc:
     #  isString: e.g., 123 -> false
     #  isFunction: ...
     #  isEmpty: e.g., {} -> true, [] -> true, ""-> true, but 0 -> false
+    #  withContinuation: (fn) -> (args...,cb) -> cb null, fn args...
+    #  refrain: try to turn a Promise into an 'async-by-continuation' function

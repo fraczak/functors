@@ -13,7 +13,7 @@ myTest = map (i, cont) ->
 
 throttleTest = (_, cb) ->
   myTest [1..5], (err, data) ->
-    return cb err if err
+    # return cb err if err
     do delay ->
       if counter isnt 2
         return cb Error "Counter shuld be '2' and is #{counter}"
