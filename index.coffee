@@ -10,6 +10,7 @@ concurrent = require "./concurrent"
 map       = require "./map"
 Maker     = require "./Maker"
 helpers   = require "./helpers"
+reduce    = require "./reduce"
 
 module.exports = {
   delay
@@ -24,4 +25,5 @@ module.exports = {
   LazyValue
   Maker
   helpers
+  reduce
 }

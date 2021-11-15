@@ -1,6 +1,6 @@
 {
   "name": "functors",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "description": "A collection of 'async-by-continuation' function generators and/or transformers",
   "main": "index.js",
   "scripts": {
@@ -15,9 +15,8 @@
   },
   "author": "Wojciech Fraczak",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "coffeescript": "^2.5.1",
-    "lodash": "^4.17.20"
+    "coffeescript": "^2.6.1",
+    "lodash": "^4.17.21"
   }
 }
