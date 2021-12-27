@@ -2,7 +2,6 @@ assert = require "assert"
 
 {product, delay} = require "../"
 fs = require 'fs'
-ld = require 'lodash'
 
 LazyValue = require "./"
 
@@ -34,7 +33,7 @@ LazyValueErrorTest = (_token, cb) ->
 
 LazyValueSelectTest = (_token, cb) ->
   trans_obj = (obj) ->
-    ld.assign {}, obj, rec: new LazyValue (cb) ->
+    Object.assign {}, obj, rec: new LazyValue (cb) ->
       fs.readFile "./#{obj.rec}", (err, val) ->
         cb null, trans_obj JSON.parse val
   lazy_obj = trans_obj require "./select.json"

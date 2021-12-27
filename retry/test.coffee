@@ -1,7 +1,5 @@
 {product, compose} = require "../"
 fs = require 'fs'
-ld = require 'lodash'
-
 retry = require "./"
 
 module.exports = (_, cb) ->
